@@ -25,9 +25,28 @@ void	pipe_checker(int fd[2])
 
 void	output_regulator(t_mini *cmd, int fd[2], int i)
 {
+	int fd_2;
+
 	close(fd[0]);
-	if (cmd->next != NULL && cmd->append == NULL && cmd->output == NULL)
+	if (cmd->next != NULL && cmd->append[0] == NULL && cmd->output[0] == NULL)
 		dup2(fd[1], 1);
+	else if (cmd->append[0] || cmd->output[0])
+	{
+		int c;
+
+		c = 0;
+		while (cmd->output[c])
+		{
+			fd_2 = open(cmd->output[c], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			if (fd_2 == -1)
+			{
+				printf("minishell: %s: open error\n",cmd->output[c]);
+				break;
+			}
+			c++;
+		}
+		dup2(fd_2, 1);
+	}
 }
 
 void	execute_pipe(t_mini *mini, char **command)
