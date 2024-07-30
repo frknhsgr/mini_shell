@@ -31,57 +31,65 @@ void	non_pipe_output2(t_mini *cmd)
     close(fd_2);
 }
 
-void	non_pipe_output(t_mini *cmd)
+void	non_pipe_output3(t_mini *cmd)
 {
-    int fd_2;
+	int fd_2;
     int c;
 
+	c = 0;
+	while (cmd->append[c])
+	{
+		fd_2 = open(cmd->append[c], O_WRONLY | O_APPEND | O_CREAT, 0644);
+        if (fd_2 == -1)
+        {
+            printf("minishell: %s: open error\n",cmd->append[c]);
+            break;
+        }
+		c++;
+	}
+    c = 0;
+    while (cmd->output[c])
+    {
+        fd_2 = open(cmd->output[c], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+        if (fd_2 == -1)
+        {
+            printf("minishell: %s: open error\n",cmd->output[c]);
+            break;
+        }
+        c++;
+    }
+    dup2(fd_2, 1);
+    close(fd_2);
+}
+
+void set_input(t_mini *cmd)
+{
+	int fd_2;
+    int c;
+
+	c = 0;
+    while (cmd->input[c])
+    {
+        fd_2 = open(cmd->input[c], O_RDONLY, 0644);
+        if (fd_2 == -1)
+        {
+            printf("minishell: %s: No such file or directory\n",cmd->input[c]);
+            exit(1);
+        }
+        c++;
+    }
+    dup2(fd_2, 0);
+    close(fd_2);
+}
+
+void	non_pipe_output(t_mini *cmd)
+{
         if ((cmd->append[0] || cmd->output[0]) && cmd->status == APPEND)
 			non_pipe_output2(cmd);
         if ((cmd->append[0] || cmd->output[0]) && cmd->status == NONE)
-        {
-            
-			c = 0;
-			while (cmd->append[c])
-			{
-				fd_2 = open(cmd->append[c], O_WRONLY | O_APPEND | O_CREAT, 0644);
-                if (fd_2 == -1)
-                {
-                    printf("minishell: %s: open error\n",cmd->append[c]);
-                    break;
-                }
-				c++;
-			}
-            c = 0;
-            while (cmd->output[c])
-            {
-                fd_2 = open(cmd->output[c], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-                if (fd_2 == -1)
-                {
-                    printf("minishell: %s: open error\n",cmd->output[c]);
-                    break;
-                }
-                c++;
-            }
-            dup2(fd_2, 1);
-            close(fd_2);
-        }
+			non_pipe_output3(cmd);
         if (cmd->input[0])
-        {
-            c = 0;
-            while (cmd->input[c])
-            {
-                fd_2 = open(cmd->input[c], O_RDONLY, 0644);
-                if (fd_2 == -1)
-                {
-                    printf("minishell: %s: No such file or directory\n",cmd->input[c]);
-                    exit(1);
-                }
-                c++;
-            }
-            dup2(fd_2, 0);
-            close(fd_2);
-        }
+        	set_input(cmd);
 }
 
 void	child_procces(t_mini *cmd, char **command)

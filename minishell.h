@@ -74,5 +74,8 @@ void	pipe_checker(int fd[2]);
 int		command_list_count(t_mini *mini);
 void	output_regulator(t_mini *cmd, int fd[2], int i);
 void    non_pipe_output(t_mini *cmd);
+void	non_pipe_output2(t_mini *cmd);
+void	non_pipe_output3(t_mini *cmd);
+void	set_input(t_mini *cmd);
 
 #endif

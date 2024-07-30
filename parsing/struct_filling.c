@@ -221,7 +221,10 @@ void	read_args(t_mini *cmd, char **arg)
 		utils_struct_init(&t, arg[i]);
 		if (arg[i] && i > 0)
 		{
-			cmd->status = PIPE;
+			if (cmd->status == APPEND)
+				cmd->status = PIPEAPPEND;
+			else
+				cmd->status = PIPE;
 			cmd->next = malloc(sizeof(t_mini));
 			cmd->next->env = cmd->env;
 			cmd = cmd->next;
