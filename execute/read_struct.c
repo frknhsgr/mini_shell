@@ -26,14 +26,14 @@ void	pipe_checker(int fd[2])
 void	output_regulator(t_mini *cmd, int fd[2], int i)
 {
 	int fd_2;
+	int c;
+	int	d;
 
 	close(fd[0]);
 	if (cmd->next != NULL && cmd->append[0] == NULL && cmd->output[0] == NULL)
 		dup2(fd[1], 1);
 	else if (cmd->append[0] || cmd->output[0])
 	{
-		int c;
-
 		c = 0;
 		while (cmd->output[c])
 		{
@@ -44,6 +44,17 @@ void	output_regulator(t_mini *cmd, int fd[2], int i)
 				break;
 			}
 			c++;
+		}
+		d = 0;
+		while (cmd->append[d])
+		{
+			fd_2 = open(cmd->append[d], O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if (fd_2 == -1)
+			{
+				printf("minishell: %s: open error\n",cmd->append[d]);
+				break;
+			}
+			d++;
 		}
 		dup2(fd_2, 1);
 	}
@@ -111,7 +122,7 @@ void read_and_exec(t_mini *cmd)
         run = execve_command(temp);
 		if (temp->status == PIPE)
 			execute_pipe(temp, run);
-		else if (temp->status == NONE)	
+		else if (temp->status == NONE || temp->status == APPEND)	
         	child_procces(temp, run);
         temp = temp->next;
     }

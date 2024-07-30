@@ -79,6 +79,7 @@ void	take_append(t_utils *t, t_mini *cmd, char *arg)
 		cmd->append[i] = NULL;
 		i = 0;
 	}
+	cmd->status = APPEND;
 }
 
 void	take_output(t_utils *t, t_mini *cmd, char *arg)
@@ -105,6 +106,8 @@ void	take_output(t_utils *t, t_mini *cmd, char *arg)
 		cmd->output[i] = NULL;
 		i = 0;
 	}
+	if (cmd->status == APPEND)
+		cmd->status = NONE;
 }
 
 
@@ -198,6 +201,7 @@ void print_cmd(t_mini *cmd)
 			printf("HEREDOC: %s\n",cmd->heredoc[x]);
 		for (int x = 0; cmd->append[x];x++)
 			printf("APPEND: %s\n",cmd->append[x]);
+		printf("status = %d\n", cmd->status);
 		printf("----------------\n");
 		cmd = cmd->next;
 	}
