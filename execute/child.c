@@ -1,11 +1,13 @@
 #include "../minishell.h"
 
-void	non_pipe_output2(t_mini *cmd)
+int	open_output(t_mini *cmd)
 {
 	int fd_2;
     int c;
 
 	c = 0;
+	if (!cmd->output)
+		return (1);
     while (cmd->output[c])
     {
         fd_2 = open(cmd->output[c], O_WRONLY | O_TRUNC | O_CREAT, 0644);
@@ -14,29 +16,21 @@ void	non_pipe_output2(t_mini *cmd)
             printf("minishell: %s: open error\n",cmd->output[c]);
             break;
         }
+		if (cmd->output[c + 1])
+			close (fd_2);
         c++;
     }
-	c = 0;
-	while (cmd->append[c])
-	{
-		fd_2 = open(cmd->append[c], O_WRONLY | O_APPEND | O_CREAT, 0644);
-        if (fd_2 == -1)
-        {
-            printf("minishell: %s: open error\n",cmd->append[c]);
-            break;
-        }
-		c++;
-	}
-    dup2(fd_2, 1);
-    close(fd_2);
+	return (fd_2);
 }
 
-void	non_pipe_output3(t_mini *cmd)
+int	open_append(t_mini *cmd)
 {
 	int fd_2;
     int c;
 
 	c = 0;
+	if (!cmd->append)
+		return (1);
 	while (cmd->append[c])
 	{
 		fd_2 = open(cmd->append[c], O_WRONLY | O_APPEND | O_CREAT, 0644);
@@ -45,21 +39,11 @@ void	non_pipe_output3(t_mini *cmd)
             printf("minishell: %s: open error\n",cmd->append[c]);
             break;
         }
+		if (cmd->append[c + 1])
+			close(fd_2);
 		c++;
 	}
-    c = 0;
-    while (cmd->output[c])
-    {
-        fd_2 = open(cmd->output[c], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-        if (fd_2 == -1)
-        {
-            printf("minishell: %s: open error\n",cmd->output[c]);
-            break;
-        }
-        c++;
-    }
-    dup2(fd_2, 1);
-    close(fd_2);
+	return (fd_2);
 }
 
 void set_input(t_mini *cmd)
@@ -84,12 +68,21 @@ void set_input(t_mini *cmd)
 
 void	non_pipe_output(t_mini *cmd)
 {
-        if ((cmd->append[0] || cmd->output[0]) && cmd->status == APPEND)
-			non_pipe_output2(cmd);
-        if ((cmd->append[0] || cmd->output[0]) && cmd->status == NONE)
-			non_pipe_output3(cmd);
-        if (cmd->input[0])
-        	set_input(cmd);
+	int	fd;
+
+
+        if (cmd->status == APPEND)
+		{
+			fd = open_append(cmd);
+			open_output(cmd);
+		}
+        else
+		{
+			fd = open_output(cmd);
+			open_append(cmd);
+		}
+		dup2(fd, 1);
+		close (fd);
 }
 
 void	child_procces(t_mini *cmd, char **command)
@@ -98,6 +91,8 @@ void	child_procces(t_mini *cmd, char **command)
     if (cmd->pid == 0)
     {
         non_pipe_output(cmd);
+		if (cmd->input[0])
+        	set_input(cmd);
         run_cmd(cmd, command);
         exit(0);
     }

@@ -25,6 +25,7 @@ void take_heredoc(t_utils *t, t_mini *cmd, char *arg)
 		cmd->heredoc[i] = NULL;
 		i = 0;
 	}
+	heredoc_status_regulator(cmd, HEREDOC);
 }
 
 
@@ -52,6 +53,7 @@ void	take_input(t_utils *t, t_mini *cmd, char *arg)
 		cmd->input[i] = NULL;
 		i = 0;
 	}
+	heredoc_status_regulator(cmd, 0);
 }
 
 void	take_append(t_utils *t, t_mini *cmd, char *arg)
@@ -79,7 +81,7 @@ void	take_append(t_utils *t, t_mini *cmd, char *arg)
 		cmd->append[i] = NULL;
 		i = 0;
 	}
-	cmd->status = APPEND;
+	append_status_regulator(cmd, APPEND);
 }
 
 void	take_output(t_utils *t, t_mini *cmd, char *arg)
@@ -106,8 +108,7 @@ void	take_output(t_utils *t, t_mini *cmd, char *arg)
 		cmd->output[i] = NULL;
 		i = 0;
 	}
-	if (cmd->status == APPEND)
-		cmd->status = NONE;
+	append_status_regulator(cmd, 0);
 }
 
 
@@ -208,6 +209,43 @@ void print_cmd(t_mini *cmd)
 	cmd = temp;
 }
 
+void	status_regulator(t_mini * mini)
+{
+	if (mini->status == HEREDOC)
+		mini->status = PIPEHEREDOC;
+	else if (mini->status == APPEND)
+		mini->status = PIPEAPPEND;
+	else if (mini->status == HEREDOCAPPEND)
+		mini->status = PIPEHEREDOCAPPEND;
+	else if (mini->status == NONE)
+		mini->status = PIPE;
+}
+
+void	append_status_regulator(t_mini *mini, int type)
+{
+	if (mini->status == NONE && type == APPEND)
+		mini->status = APPEND;
+	else if (mini->status == HEREDOC && type == APPEND)
+		mini->status = HEREDOCAPPEND;
+	else if (mini->status == APPEND && type == 0)
+		mini->status = NONE;
+	else if (mini->status == HEREDOCAPPEND && type == 0)
+		mini->status = HEREDOC;
+}
+
+void	heredoc_status_regulator(t_mini *mini, int type)
+{
+	if (mini->status == NONE && type == HEREDOC)
+		mini->status = HEREDOC;
+	else if (mini->status == APPEND && type == HEREDOC)
+		mini->status = HEREDOCAPPEND;
+	else if (mini->status == HEREDOC && type == 0)
+		mini->status = NONE;
+	else if (mini->status == HEREDOCAPPEND && type == 0)
+		mini->status = APPEND;
+	
+}
+
 void	read_args(t_mini *cmd, char **arg)
 {
 	t_utils t;
@@ -221,10 +259,7 @@ void	read_args(t_mini *cmd, char **arg)
 		utils_struct_init(&t, arg[i]);
 		if (arg[i] && i > 0)
 		{
-			if (cmd->status == APPEND)
-				cmd->status = PIPEAPPEND;
-			else
-				cmd->status = PIPE;
+			status_regulator(cmd);
 			cmd->next = malloc(sizeof(t_mini));
 			cmd->next->env = cmd->env;
 			cmd = cmd->next;

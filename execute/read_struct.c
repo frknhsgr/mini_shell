@@ -23,45 +23,40 @@ void	pipe_checker(int fd[2])
 	}
 }
 
-void	output_regulator(t_mini *cmd, int fd[2], int i)
+int	output_append_checker(t_mini *mini)
 {
-	// int fd_2;
-	// int c;
-	// int	d;
+	if (mini->next != NULL && mini->append[0] == NULL && mini->output[0] == NULL)
+		return (1);
+	else if (mini->output[0] != NULL || mini->append[0] != NULL)
+		return (2);
+	return (0);
+}
+
+int	output_regulator(t_mini *cmd, int fd[2], int i)
+{
+	int	fd_2;
 
 	close(fd[0]);
-	if (cmd->next != NULL && cmd->append[0] == NULL && cmd->output[0] == NULL)
+	if (output_append_checker(cmd) == 1)
 		dup2(fd[1], 1);
-	else if (cmd->append[0] || cmd->output[0])
+	else if (output_append_checker(cmd) == 2)
 	{
-		// c = 0;
-		// while (cmd->output[c])
-		// {
-		// 	fd_2 = open(cmd->output[c], O_WRONLY | O_TRUNC | O_CREAT, 0644);
-		// 	if (fd_2 == -1)
-		// 	{
-		// 		printf("minishell: %s: open error\n",cmd->output[c]);
-		// 		break;
-		// 	}
-		// 	c++;
-		// }
-		// d = 0;
-		// while (cmd->append[d])
-		// {
-		// 	fd_2 = open(cmd->append[d], O_WRONLY | O_APPEND | O_CREAT, 0644);
-		// 	if (fd_2 == -1)
-		// 	{
-		// 		printf("minishell: %s: open error\n",cmd->append[d]);
-		// 		break;
-		// 	}
-		// 	d++;
-		// }
-		// dup2(fd_2, 1);
-		if (cmd->status == PIPEAPPEND)
-			non_pipe_output2(cmd);
-		if (cmd->status == PIPE)
-			non_pipe_output3(cmd);
+		if ((cmd->status == PIPEAPPEND || cmd->status == PIPEHEREDOCAPPEND)
+			|| cmd->status == HEREDOCAPPEND)
+		{
+			fd_2 = open_append(cmd);
+			open_output(cmd);
+		}
+		else
+		{
+			fd_2 = open_output(cmd);
+			open_append(cmd);
+		}
+		dup2(fd_2, 1);
+		close(fd_2);
+		return (fd_2);
 	}
+	return (0);
 }
 
 void	execute_pipe(t_mini *mini, char **command)
@@ -115,6 +110,17 @@ char **execve_command(t_mini *temp)
     return (ret);
 }
 
+int	status_check(t_mini *temp)
+{
+	if (temp->status == PIPE || temp->status == PIPEAPPEND)
+		return (1);
+	else if (temp->status == HEREDOC || temp->status == HEREDOCAPPEND
+		|| temp->status == PIPEHEREDOC || temp->status == PIPEHEREDOCAPPEND)
+		return (2);
+	else
+		return (3);
+}
+
 void read_and_exec(t_mini *cmd)
 {
     t_mini	*temp;
@@ -126,9 +132,9 @@ void read_and_exec(t_mini *cmd)
     while (temp)
     {
         run = execve_command(temp);
-		if (temp->status == PIPE || temp->status == PIPEAPPEND)
+		if (status_check(temp) == 1)
 			execute_pipe(temp, run);
-		else if (temp->status == NONE || temp->status == APPEND)	
+		else if (status_check(temp) == 3)	
         	child_procces(temp, run);
         temp = temp->next;
     }
