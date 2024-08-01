@@ -1,5 +1,7 @@
 #include "minishell.h"
 
+int	global_exit;
+
 void utils_struct_init(t_utils *t, char *arg)
 {
 	if (arg[0])
@@ -38,6 +40,7 @@ int main(int ac, char **av)
 	if (ac != 1)
 		return(printf("Error: Invalid Argument Count!\n"));
 	(void)av;
+	global_exit = 0;
     take_env(&mini);
     while(1)
     {
@@ -60,6 +63,6 @@ int main(int ac, char **av)
         args = mm_split(temp1);
         read_args(&mini, args);
 		if (mini.cmd != NULL)
-			read_and_exec(&mini);
+			read_and_exec(&mini, command_list_count(&mini));
     }
 }

@@ -44,13 +44,13 @@ int	output_regulator(t_mini *cmd, int fd[2], int i)
 		if ((cmd->status == PIPEAPPEND || cmd->status == PIPEHEREDOCAPPEND)
 			|| cmd->status == HEREDOCAPPEND)
 		{
-			fd_2 = open_append(cmd);
-			open_output(cmd);
+			fd_2 = open_append(cmd, i);
+			open_output(cmd, i);
 		}
 		else
 		{
-			fd_2 = open_output(cmd);
-			open_append(cmd);
+			fd_2 = open_output(cmd, i);
+			open_append(cmd, i);
 		}
 		dup2(fd_2, 1);
 		close(fd_2);
@@ -59,7 +59,7 @@ int	output_regulator(t_mini *cmd, int fd[2], int i)
 	return (0);
 }
 
-void	execute_pipe(t_mini *mini, char **command)
+void	execute_pipe(t_mini *mini, char **command, int i)
 {
 	int	pipe[2];
 
@@ -68,10 +68,9 @@ void	execute_pipe(t_mini *mini, char **command)
 	if (mini->pid == 0)
 	{
 		close(pipe[0]);
-		output_regulator(mini, pipe, 0);
+		set_input(mini, i);
+		output_regulator(mini, pipe, i);
 		close(pipe[1]);
-		if(mini->input[0])
-			set_input(mini);
 		if (mini->status != BUILTIN)
 			run_cmd(mini, command);
 	}
@@ -121,21 +120,93 @@ int	status_check(t_mini *temp)
 		return (3);
 }
 
-void read_and_exec(t_mini *cmd)
+void	close_heredoc()
+{
+	global_exit = 130;
+	exit (130);
+}
+
+int	check_same(char *s1, char *s2)
+{
+	if (!s1 || !s2)
+		return (1);
+	if (ft_strncmp(s1, s2, ft_strlen(s1)) == 0 && ft_strncmp(s2, s1, ft_strlen(s2)) == 0)
+		return (0);
+	return (1);
+}
+
+void	ft_heredoc(int fd[2], t_mini *mini, int fd_2[2])
+{
+	int		i;
+	char	*temp;
+
+	i = 0;
+	dup2(fd[0], 0);
+	while (mini->heredoc[i])
+	{
+		if (global_exit == 999)
+		{
+			free (temp);
+			exit (130);
+		}
+		temp = readline("> ");
+		if (!temp)
+			close_heredoc();
+		if (global_exit == 999)
+			continue ;
+		if (temp && mini->heredoc[i + 1] == NULL && check_same(mini->heredoc[i], temp) != 0)
+			ft_putendl_fd(temp, fd_2[1]);
+		if (check_same(mini->heredoc[i], temp) == 0)
+			i++;
+		free (temp);
+	}
+	exit (0);
+}
+
+void	heredoc_pipe(t_mini *mini, char **command, int fd[2])
+{
+	int	fd_2[2];
+	int	status;
+
+	pipe_checker(fd_2);
+	mini->pid = fork();
+	if (mini->pid == 0)
+	{
+		ft_heredoc(fd, mini, fd_2);
+	}
+	close(fd_2[1]);
+	dup2(fd_2[0], 0);
+	close(fd_2[0]);
+	waitpid(mini->pid, &status, 0);
+	if (WIFEXITED(status))
+		global_exit = WEXITSTATUS(status);
+	if (global_exit == 130)
+		ft_free_dp(command);
+}
+
+void read_and_exec(t_mini *cmd, int i)
 {
     t_mini	*temp;
-    char	**run;
+    char	**command;
 	int		fd[2];
 
     temp = cmd;
 	duplicate_default_fd(fd);
     while (temp)
     {
-        run = execve_command(temp);
+        command = execve_command(temp);
 		if (status_check(temp) == 1)
-			execute_pipe(temp, run);
-		else if (status_check(temp) == 3)	
-        	child_procces(temp, run);
+			execute_pipe(temp, command, i);
+		else if (status_check(temp) == 2)
+		{
+			heredoc_pipe(temp, command, fd);
+			if (global_exit == 130)
+				break ;
+			execute_pipe(temp, command, i);
+		}
+		else
+        	child_procces(temp, command, i);
+		ft_free_dp(command);
         temp = temp->next;
     }
 	close_duplicate_fd(fd);
