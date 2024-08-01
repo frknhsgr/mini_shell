@@ -94,17 +94,23 @@ char **execve_command(t_mini *temp)
     }
     else
         temp2 = NULL;
-    ret = malloc(sizeof(char *) * (i + 2));
+	if (temp->cmd != NULL)
+		i++;
+    ret = malloc(sizeof(char *) * (i + 1));
     if (!ret)
         return (NULL);
-    ret[0] = ft_strdup(temp->cmd);
+	if (temp->cmd != NULL)
+    	ret[0] = ft_strdup(temp->cmd);
     i = 0;
     while (temp2 && temp2[i])
     {
         ret[i + 1] = ft_strdup(temp2[i]);
         i++;
     }
-    ret[i + 1] =  NULL;
+	if (i == 0 && temp->cmd == NULL)
+    	ret[0] =  NULL;
+	else
+		ret[i + 1] = NULL;
 	ft_free_dp(temp2);
     return (ret);
 }

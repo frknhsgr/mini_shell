@@ -62,7 +62,6 @@ int main(int ac, char **av)
         free (temp);
         args = mm_split(temp1);
         read_args(&mini, args);
-		if (mini.cmd != NULL)
-			read_and_exec(&mini, command_list_count(&mini));
+		read_and_exec(&mini, command_list_count(&mini));
     }
 }
