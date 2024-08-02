@@ -76,6 +76,7 @@ void		run_cmd(t_mini *cmd, char **command);
 void		heredoc_status_regulator(t_mini *mini, int type);
 void		append_status_regulator(t_mini *mini, int type);
 void		status_regulator(t_mini *mini);
+void		ft_executer(t_mini *mini, char **command, int i, int fd[2]);
 void		read_and_exec(t_mini *cmd, int i);
 void		child_procces(t_mini *cmd, char **command, int i);
 void		wait_child(t_mini *cmd);

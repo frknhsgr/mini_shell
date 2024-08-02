@@ -105,9 +105,8 @@ void	child_procces(t_mini *cmd, char **command, int i)
 	cmd->pid = fork();
     if (cmd->pid == 0)
     {
+        set_input(cmd, i);
         non_pipe_output(cmd, i);
-		if (cmd->input[0])
-        	set_input(cmd, i);
         run_cmd(cmd, command);
         exit(0);
     }

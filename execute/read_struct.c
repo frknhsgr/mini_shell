@@ -190,7 +190,30 @@ void	heredoc_pipe(t_mini *mini, char **command, int fd[2])
 		ft_free_dp(command);
 }
 
-void read_and_exec(t_mini *cmd, int i)
+void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
+{
+	if (status_check(mini) == 1)
+	{	
+		if (mini->heredoc[0])
+			heredoc_pipe(mini, command, fd);
+		execute_pipe(mini, command, i);
+	}
+	else if (status_check(mini) == 2)
+	{
+		heredoc_pipe(mini, command, fd);
+		if (global_exit == 130)
+			return ;
+		execute_pipe(mini, command, i);
+	}
+	else
+	{
+		if (mini->heredoc[0])
+			heredoc_pipe(mini, command, fd);
+    	child_procces(mini, command, i);
+	}
+}
+
+void	read_and_exec(t_mini *cmd, int i)
 {
     t_mini	*temp;
     char	**command;
@@ -201,17 +224,22 @@ void read_and_exec(t_mini *cmd, int i)
     while (temp)
     {
         command = execve_command(temp);
-		if (status_check(temp) == 1)
-			execute_pipe(temp, command, i);
-		else if (status_check(temp) == 2)
-		{
-			heredoc_pipe(temp, command, fd);
-			if (global_exit == 130)
-				break ;
-			execute_pipe(temp, command, i);
-		}
-		else
-        	child_procces(temp, command, i);
+		ft_executer(temp, command, i, fd);
+		// if (status_check(temp) == 1)
+		// {	
+			// if (temp->heredoc[0])
+				// heredoc_pipe(temp, command, fd);
+			// execute_pipe(temp, command, i);
+		// }
+		// else if (status_check(temp) == 2)
+		// {
+			// heredoc_pipe(temp, command, fd);
+			// if (global_exit == 130)
+				// break ;
+			// execute_pipe(temp, command, i);
+		// }
+		// else
+        	// child_procces(temp, command, i);
 		ft_free_dp(command);
         temp = temp->next;
     }
