@@ -267,6 +267,7 @@ void	read_args(t_mini *cmd, char **arg)
 			cmd->next = NULL;
 		}
 		ft_allcation_for_struct(cmd, &t);
+		cmd->arg = ft_strdup(arg[i]);
 		filling_struct(cmd,&t,arg[i]);
 		i++;
 	}

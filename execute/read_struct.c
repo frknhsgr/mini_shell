@@ -59,6 +59,114 @@ int	output_regulator(t_mini *cmd, int fd[2], int i)
 	return (0);
 }
 
+int	ft_open_input(t_mini *mini, int i)
+{
+	static int	j;
+	int			fd;
+
+	if (!mini->input || !mini->input[j])
+        return (1);
+	if (mini->input[j])
+	{
+		fd = open(mini->input[j], O_RDONLY, 0644);
+        if (fd == -1 && (i != 1 || mini->status != BUILTIN))
+            fderror_1(mini->input[j]);
+        else if (fd == -1 && i == 1)
+        {
+            fderror_2(mini->input[j]);
+            return (-1);
+        }
+        if (mini->input[j + 1])
+            close (fd);
+        j++;
+	}
+	if (mini->input[j] == NULL)
+	{
+		dup2(fd, 0);
+		close(fd);
+	}
+	return (1);
+}
+
+int	ft_open_output(t_mini *mini, int i)
+{
+	int			fd;
+    static int	j;
+
+	if (!mini->output)
+		return (1);
+	if (mini->output[j])
+	{
+		fd = open(mini->output[j], O_WRONLY | O_TRUNC | O_CREAT, 0644);
+        if (fd == -1 && (i != 1 || mini->status != BUILTIN))
+            fderror_1(mini->output[j]);
+        else if (fd == -1 && i == 1)
+        {
+            fderror_2(mini->output[j]);
+            return (-1);
+        }
+		if (mini->output[j + 1])
+			close(fd);
+		j++;
+	}
+	return (fd);
+}
+
+int	ft_open_append(t_mini *mini, int i)
+{
+	int			fd;
+    static int	j;
+
+	if (!mini->append)
+		return (1);
+	if (mini->append[j])
+	{
+		fd = open(mini->append[j], O_WRONLY | O_APPEND | O_CREAT, 0644);
+        if (fd == -1 && (i != 1 || mini->status != BUILTIN))
+            fderror_1(mini->append[j]);
+        else if (fd == -1 && i == 1)
+        {
+            fderror_2(mini->append[j]);
+            return (-1);
+        }
+		if (mini->append[j + 1])
+			close(fd);
+		j++;
+	}
+	return (fd);
+}
+
+void	output_input_regulator(t_mini *mini, int i, int sq, int dq)
+{
+	int	j;
+	int	flag;
+	int fd;
+
+	j = 0;
+	flag = 1;
+	//if (output_append_checker(mini))
+	while (mini->arg[j])
+	{
+		quote_check(mini->arg[j], &sq, &dq);
+		if (flag == -1 || fd == -1)
+			break ;
+		if (mini->arg[j] == '<' && mini->arg[j + 1] != '<' && sq % 2 == 0 && dq % 2 == 0)
+			flag = ft_open_input(mini, i);
+		else if (mini->arg[j] == '<' && mini->arg[j + 1] == '<' && sq % 2 == 0 && dq % 2 == 0)
+			j++;
+		else if (mini->arg[j] == '>' && mini->arg[j + 1] != '>' && sq % 2 == 0 && dq % 2 == 0)
+			fd = ft_open_output(mini, i);
+		else if (mini->arg[j] == '>' && mini->arg[j + 1] == '>' && sq % 2 == 0 && dq % 2 == 0)
+		{
+			fd = ft_open_append(mini, i);
+			j++;
+		}
+		j++;
+	}
+	dup2(fd, 1);
+	close (fd);
+}
+
 void	execute_pipe(t_mini *mini, char **command, int i)
 {
 	int	pipe[2];
@@ -225,21 +333,6 @@ void	read_and_exec(t_mini *cmd, int i)
     {
         command = execve_command(temp);
 		ft_executer(temp, command, i, fd);
-		// if (status_check(temp) == 1)
-		// {	
-			// if (temp->heredoc[0])
-				// heredoc_pipe(temp, command, fd);
-			// execute_pipe(temp, command, i);
-		// }
-		// else if (status_check(temp) == 2)
-		// {
-			// heredoc_pipe(temp, command, fd);
-			// if (global_exit == 130)
-				// break ;
-			// execute_pipe(temp, command, i);
-		// }
-		// else
-        	// child_procces(temp, command, i);
 		ft_free_dp(command);
         temp = temp->next;
     }

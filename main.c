@@ -20,6 +20,7 @@ void utils_struct_init(t_utils *t, char *arg)
 
 void init_mini_struct(t_mini *mini)
 {
+	mini->arg = NULL;
 	mini->cmd = NULL;
 	mini->flag_arg = NULL;
 	mini->output = NULL;

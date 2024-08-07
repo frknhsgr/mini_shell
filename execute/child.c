@@ -52,7 +52,7 @@ int	open_append(t_mini *cmd, int i)
 
 int set_input(t_mini *cmd, int i)
 {
-	int fd_2;
+	int	fd_2;
     int j;
 
 	j = 0;
@@ -105,8 +105,9 @@ void	child_procces(t_mini *cmd, char **command, int i)
 	cmd->pid = fork();
     if (cmd->pid == 0)
     {
-        set_input(cmd, i);
-        non_pipe_output(cmd, i);
+        //set_input(cmd, i);
+        //non_pipe_output(cmd, i);
+		output_input_regulator(cmd, i, 0, 0);
         run_cmd(cmd, command);
         exit(0);
     }

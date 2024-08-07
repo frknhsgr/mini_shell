@@ -28,6 +28,7 @@
 
 typedef struct s_mini
 {
+	char			*arg;
 	char			*cmd;
 	char			*flag_arg;
 	char			**env;
@@ -86,12 +87,20 @@ void		duplicate_default_fd(int fd[2]);
 void		close_duplicate_fd(int fd[2]);
 void		pipe_checker(int fd[2]);
 int			command_list_count(t_mini *mini);
+
+void		output_input_regulator(t_mini *mini, int i, int sq, int dq);
 int			output_regulator(t_mini *cmd, int fd[2], int i);
 int			non_pipe_output(t_mini *cmd, int i);
 int			output_append_checker(t_mini *mini);
 int			open_append(t_mini *cmd, int i);
+
 int			open_output(t_mini *cmd, int i);
+int			ft_open_output(t_mini *mini, int i);
+int			ft_open_append(t_mini *mini, int i);
+
 int			set_input(t_mini *cmd, int i);
+int			ft_open_input(t_mini *mini, int i);
+
 int			status_check(t_mini *temp);
 void		heredoc_pipe(t_mini *mini, char **command, int fd[2]);
 void		ft_heredoc(int fd[2], t_mini *mini, int fd_2[2]);
