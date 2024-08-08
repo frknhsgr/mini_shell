@@ -38,7 +38,7 @@ int	ft_open_input(t_mini *mini, int i)
 	static int	j;
 
 	if (!mini->input || !mini->input[j])
-        return (1);
+    	return (1);
 	if (mini->input[j])
 	{
 		fd = open(mini->input[j], O_RDONLY, 0644);
@@ -74,7 +74,7 @@ int	ft_open_output(t_mini *mini, int i)
         if (fd == -1 && (i != 1 || mini->status != BUILTIN))
             fderror_1(mini->output[j]);
         else if (fd == -1 && i == 1)
-        {
+		{
             fderror_2(mini->output[j]);
             return (-1);
         }
@@ -159,7 +159,6 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	if (mini->pid == 0)
 	{
 		close(pipe[0]);
-		output_regulator(mini, pipe, i);
 		output_input_regulator(mini, i, pipe);
 		close(pipe[1]);
 		if (mini->status != BUILTIN)
