@@ -32,37 +32,10 @@ int	output_append_checker(t_mini *mini)
 	return (0);
 }
 
-int	output_regulator(t_mini *cmd, int fd[2], int i)
-{
-	int	fd_2;
-
-	close(fd[0]);
-	if (output_append_checker(cmd) == 1)
-		dup2(fd[1], 1);
-	else if (output_append_checker(cmd) == 2)
-	{
-		if ((cmd->status == PIPEAPPEND || cmd->status == PIPEHEREDOCAPPEND)
-			|| cmd->status == HEREDOCAPPEND)
-		{
-			fd_2 = open_append(cmd, i);
-			open_output(cmd, i);
-		}
-		else
-		{
-			fd_2 = open_output(cmd, i);
-			open_append(cmd, i);
-		}
-		dup2(fd_2, 1);
-		close(fd_2);
-		return (fd_2);
-	}
-	return (0);
-}
-
 int	ft_open_input(t_mini *mini, int i)
 {
-	static int	j;
 	int			fd;
+	static int	j;
 
 	if (!mini->input || !mini->input[j])
         return (1);
@@ -186,8 +159,7 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	if (mini->pid == 0)
 	{
 		close(pipe[0]);
-		//set_input(mini, i);
-		//output_regulator(mini, pipe, i);
+		output_regulator(mini, pipe, i);
 		output_input_regulator(mini, i, pipe);
 		close(pipe[1]);
 		if (mini->status != BUILTIN)
