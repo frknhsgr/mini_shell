@@ -136,16 +136,15 @@ int	ft_open_append(t_mini *mini, int i)
 	return (fd);
 }
 
-void	output_input_regulator(t_mini *mini, int i, int sq, int dq)
+void	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
 {
 	int	j;
 	int	flag;
 	int fd;
 
-	j = 0;
+	j = -1;
 	flag = 1;
-	//if (output_append_checker(mini))
-	while (mini->arg[j])
+	while (mini->arg[++j])
 	{
 		quote_check(mini->arg[j], &sq, &dq);
 		if (flag == -1 || fd == -1)
@@ -161,10 +160,21 @@ void	output_input_regulator(t_mini *mini, int i, int sq, int dq)
 			fd = ft_open_append(mini, i);
 			j++;
 		}
-		j++;
 	}
 	dup2(fd, 1);
 	close (fd);
+}
+
+void	output_input_regulator(t_mini *mini, int i, int fd[2])
+{
+	close (fd[0]);
+	if (output_append_checker(mini) == 1)
+	{
+		dup2(fd[1], 1);
+		onecommand_output_input_regulator(mini, i, 0, 0);
+	}
+	else if (output_append_checker(mini) == 2)
+		onecommand_output_input_regulator(mini, i, 0, 0);
 }
 
 void	execute_pipe(t_mini *mini, char **command, int i)
@@ -176,8 +186,9 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	if (mini->pid == 0)
 	{
 		close(pipe[0]);
-		set_input(mini, i);
-		output_regulator(mini, pipe, i);
+		//set_input(mini, i);
+		//output_regulator(mini, pipe, i);
+		output_input_regulator(mini, i, pipe);
 		close(pipe[1]);
 		if (mini->status != BUILTIN)
 			run_cmd(mini, command);

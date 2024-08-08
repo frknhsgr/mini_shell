@@ -88,7 +88,8 @@ void		close_duplicate_fd(int fd[2]);
 void		pipe_checker(int fd[2]);
 int			command_list_count(t_mini *mini);
 
-void		output_input_regulator(t_mini *mini, int i, int sq, int dq);
+void		onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq);
+void		output_input_regulator(t_mini *mini, int i, int fd[2]);
 int			output_regulator(t_mini *cmd, int fd[2], int i);
 int			non_pipe_output(t_mini *cmd, int i);
 int			output_append_checker(t_mini *mini);

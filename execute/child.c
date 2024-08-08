@@ -107,7 +107,7 @@ void	child_procces(t_mini *cmd, char **command, int i)
     {
         //set_input(cmd, i);
         //non_pipe_output(cmd, i);
-		output_input_regulator(cmd, i, 0, 0);
+		onecommand_output_input_regulator(cmd, i, 0, 0);
         run_cmd(cmd, command);
         exit(0);
     }
