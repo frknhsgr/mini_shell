@@ -286,6 +286,8 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 	{	
 		if (mini->heredoc[0])
 			heredoc_pipe(mini, command, fd);
+		if (global_exit == 130)
+			return ;
 		execute_pipe(mini, command, i);
 	}
 	else if (status_check(mini) == 2)
@@ -299,6 +301,8 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 	{
 		if (mini->heredoc[0])
 			heredoc_pipe(mini, command, fd);
+		if (global_exit == 130)
+			return ;
     	child_procces(mini, command, i);
 	}
 }
