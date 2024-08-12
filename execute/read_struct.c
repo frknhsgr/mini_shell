@@ -66,7 +66,8 @@ int	ft_open_output(t_mini *mini, int i)
 	int			fd;
     static int	j;
 
-	if (!mini->output)
+	fd = 0;
+	if (!mini->output || !mini->output[j])
 		return (1);
 	if (mini->output[j])
 	{
@@ -90,7 +91,8 @@ int	ft_open_append(t_mini *mini, int i)
 	int			fd;
     static int	j;
 
-	if (!mini->append)
+	fd = 0;
+	if (!mini->append || !mini->append[j])
 		return (1);
 	if (mini->append[j])
 	{
