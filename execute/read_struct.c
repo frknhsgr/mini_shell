@@ -160,6 +160,7 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	mini->pid = fork();
 	if (mini->pid == 0)
 	{
+		ft_signal_regulator(CHILD_P);
 		close(pipe[0]);
 		output_input_regulator(mini, i, pipe);
 		close(pipe[1]);
@@ -270,6 +271,7 @@ void	heredoc_pipe(t_mini *mini, char **command, int fd[2])
 	mini->pid = fork();
 	if (mini->pid == 0)
 	{
+		ft_signal_regulator(HEREDOC_P);
 		ft_heredoc(fd, mini, fd_2);
 	}
 	close(fd_2[1]);

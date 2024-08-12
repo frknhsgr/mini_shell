@@ -45,6 +45,7 @@ int main(int ac, char **av)
     take_env(&mini);
     while(1)
     {
+		ft_signal_regulator(MAIN_P);
 		init_mini_struct(&mini);
         temp = readline("minishell> ");
 		if (!temp)

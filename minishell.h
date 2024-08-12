@@ -25,6 +25,9 @@
 # define PIPEAPPEND 6
 # define PIPEHEREDOCAPPEND 7
 # define BUILTIN 8
+# define CHILD_P 9
+# define MAIN_P 10
+# define HEREDOC_P 11
 
 typedef struct s_mini
 {
@@ -103,5 +106,9 @@ void		fderror_1(char *str);
 void		fderror_2(char *str);
 int			ft_isdirectory(const char *str);
 int			is_fileordirectory(const char *str);
+
+void		ft_signal_regulator(int status);
+void		ft_main_signal(int signal);
+void		ft_heredoc_signal(int signal);
 
 #endif
