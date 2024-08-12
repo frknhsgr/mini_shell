@@ -14,7 +14,7 @@
 # include <fcntl.h>
 # include <errno.h>
 # include <string.h>
-# include "libft/libft.h"
+# include "lib/libft/libft.h"
 
 # define NONE 0
 # define HEREDOC 1
