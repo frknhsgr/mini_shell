@@ -52,7 +52,7 @@ void    run_cmd(t_mini *cmd, char **command)
 {
     char *path;
 
-    if (command[0][0] == '/')
+    if (strchr(command[0], '/'))
     {
         if (access(command[0], X_OK))
         {
