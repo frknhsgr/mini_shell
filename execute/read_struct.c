@@ -282,8 +282,8 @@ void	heredoc_pipe(t_mini *mini, char **command, int fd[2])
 	waitpid(mini->pid, &status, 0);
 	if (WIFEXITED(status))
 		global_exit = WEXITSTATUS(status);
-	if (global_exit == 130)
-		ft_free_dp(command);
+	// if (global_exit == 130)
+	// 	ft_free_dp(command);
 }
 
 void	ft_executer(t_mini *mini, char **command, int i, int fd[2])

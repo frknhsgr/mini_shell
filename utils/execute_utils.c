@@ -75,7 +75,7 @@ void	ft_free_dp(char **str)
 	int	i;
 
 	i = 0;
-	if (!str)
+	if (!str || !str[i])
 		return ;
 	while (str[i])
 	{
@@ -93,7 +93,7 @@ void	ft_main_signal(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		global_exit = 130;
+		global_exit = 1;
 	}
 }
 
