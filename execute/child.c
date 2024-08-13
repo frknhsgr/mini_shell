@@ -1,13 +1,15 @@
 #include "../minishell.h"
 
-void	child_procces(t_mini *cmd, char **command, int i)
+void	child_procces(t_mini *mini, char **command, int i)
 {
-	cmd->pid = fork();
-    if (cmd->pid == 0)
+	mini->pid = fork();
+    if (mini->pid == 0)
     {
 		ft_signal_regulator(CHILD_P);
-		onecommand_output_input_regulator(cmd, i, 0, 0);
-        run_cmd(cmd, command);
+		onecommand_output_input_regulator(mini, i, 0, 0);
+		check_builtin(mini);
+		if (mini->status != BUILTIN)
+        	run_cmd(mini, command);
         exit(0);
     }
     return ;

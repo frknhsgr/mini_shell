@@ -111,4 +111,8 @@ void		ft_signal_regulator(int status);
 void		ft_main_signal(int signal);
 void		ft_heredoc_signal(int signal);
 
+char		*make_lower(char *str);
+int			builtin_strcmp(char *s1, char *s2);
+void		check_builtin(t_mini *mini);
+
 #endif
