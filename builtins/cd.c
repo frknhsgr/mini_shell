@@ -154,28 +154,17 @@ void	cd(t_mini *mini, char *newlocation)
 	oldpwd = getcwd(NULL, 0);
 	if (newlocation && check_same(newlocation, "-") == 0)
 	{
-		printf("case1\n");
 		if (cd_case1(mini, &newlocation, &newpwd, oldpwd) == 1)
 			return ;
 	}
 	else if (newlocation && newlocation[0] != '/')
-	{
-		printf("set_newlocation\n");
 		set_newlocation(oldpwd, &newpwd, newlocation);
-	}
 	if (newlocation == NULL)
-	{
-		printf("case2\n");
 		if (cd_case2(mini, &newpwd, &newlocation, oldpwd) == 1)
 			return ;
-	}
-	printf("%s\n", newpwd);
 	if (chdir(newpwd) != 0)
-	{
-		printf("chdir situation\n");
 		if (chdir_situation(newpwd, newlocation, oldpwd) == 1)
 			return ;
-	}
 	set_pwd(mini, oldpwd, newpwd);
 	free(oldpwd);
 	free(newpwd);
