@@ -99,7 +99,7 @@ int			ft_open_append(t_mini *mini, int i);
 int			ft_open_input(t_mini *mini, int i);
 
 int			status_check(t_mini *temp);
-void		heredoc_pipe(t_mini *mini, char **command, int fd[2]);
+void		heredoc_pipe(t_mini *mini, int fd[2]);
 void		ft_heredoc(int fd[2], t_mini *mini, int fd_2[2]);
 int			check_same(char *s1, char *s2);
 void		fderror_1(char *str);
@@ -113,6 +113,18 @@ void		ft_heredoc_signal(int signal);
 
 char		*make_lower(char *str);
 int			builtin_strcmp(char *s1, char *s2);
+void		check_builtin_status(t_mini *mini);
 void		check_builtin(t_mini *mini);
+void		cd(t_mini *mini, char *newlocation);
+int			cd_case1(t_mini *mini, char **newlocation, char **newpwd, char *oldpwd);
+void		set_newlocation(char *oldpwd, char **newpwd, char *newlocation);
+char		*get_oldpwd(t_mini *mini);
+int			cd_case2(t_mini *mini, char **newpwd, char **newlocation, char *oldpwd);
+char		*get_home(t_mini *mini);
+int			chdir_situation(char *newpwd, char *newlocation, char *oldpwd);
+void		set_pwd(t_mini *mini, char *oldpwd, char *newpwd);
+void		set_newpwd2(char *newpwd, char **newpwd2);
+void		set_newpwd(t_mini *mini, char *newpwd, char *newpwd2, int i);
+void		set_oldpwd(t_mini *mini, char *oldpwd, int i);
 
 #endif

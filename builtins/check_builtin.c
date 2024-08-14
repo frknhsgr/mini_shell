@@ -23,6 +23,12 @@ int	builtin_strcmp(char *s1, char *s2)
 
 void	check_builtin(t_mini *mini)
 {
+	if (mini->cmd && check_same(mini->cmd, "cd") == 0)
+		cd(mini, mini->flag_arg);
+}
+
+void	check_builtin_status(t_mini *mini)
+{
 	if (mini->cmd && check_same(mini->cmd, "exit") == 0)
 		mini->status = BUILTIN;
 	else if (mini->cmd && check_same(mini->cmd, "export") == 0)

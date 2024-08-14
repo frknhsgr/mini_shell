@@ -164,9 +164,12 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 		close(pipe[0]);
 		output_input_regulator(mini, i, pipe);
 		close(pipe[1]);
-		check_builtin(mini);
+		check_builtin_status(mini);
 		if (mini->status != BUILTIN)
 			run_cmd(mini, command);
+		else
+        	check_builtin(mini);
+		exit (global_exit);
 	}
 	close(pipe[1]);
 	dup2(pipe[0], 0);
@@ -264,7 +267,7 @@ void	ft_heredoc(int fd[2], t_mini *mini, int fd_2[2])
 	exit (0);
 }
 
-void	heredoc_pipe(t_mini *mini, char **command, int fd[2])
+void	heredoc_pipe(t_mini *mini, int fd[2])
 {
 	int	fd_2[2];
 	int	status;
@@ -282,8 +285,6 @@ void	heredoc_pipe(t_mini *mini, char **command, int fd[2])
 	waitpid(mini->pid, &status, 0);
 	if (WIFEXITED(status))
 		global_exit = WEXITSTATUS(status);
-	// if (global_exit == 130)
-	// 	ft_free_dp(command);
 }
 
 void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
@@ -291,14 +292,14 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 	if (status_check(mini) == 1)
 	{	
 		if (mini->heredoc[0])
-			heredoc_pipe(mini, command, fd);
+			heredoc_pipe(mini, fd);
 		if (global_exit == 130)
 			return ;
 		execute_pipe(mini, command, i);
 	}
 	else if (status_check(mini) == 2)
 	{
-		heredoc_pipe(mini, command, fd);
+		heredoc_pipe(mini, fd);
 		if (global_exit == 130)
 			return ;
 		execute_pipe(mini, command, i);
@@ -306,7 +307,7 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 	else
 	{
 		if (mini->heredoc[0])
-			heredoc_pipe(mini, command, fd);
+			heredoc_pipe(mini, fd);
 		if (global_exit == 130)
 			return ;
     	child_procces(mini, command, i);

@@ -1,11 +1,12 @@
 NAME	=	minishell
 
 SRC	=	main.c parsing/divide_prs.c  parsing/take_output.c parsing/struct_filling.c builtins/env.c \
-		execute/execute.c execute/read_struct.c execute/child.c utils/execute_utils.c utils/check_builtin.c
+		execute/execute.c execute/read_struct.c execute/child.c utils/execute_utils.c builtins/check_builtin.c \
+		builtins/cd.c
 
 
 CC = gcc
-CFLAGS = #-Wall -Werror -Wextra
+CFLAGS = -Wall -Werror -Wextra
 RM = rm -rf
 LIBFT = lib/libft/libft.a
 READLINE = readline
