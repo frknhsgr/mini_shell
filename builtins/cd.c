@@ -7,12 +7,12 @@ char	*get_oldpwd(t_mini *mini)
 	i = 0;
 	while (mini->env[i])
 	{
-		if (check_same(mini->env[i], "OLDPWD=") == 0)
+		if (ft_strncmp(mini->env[i], "OLDPWD=", 7) == 0)
 			return (ft_strdup(ft_strchr(mini->env[i], '=') + 1));
 		i++;
 	}
 	ft_putendl_fd("minishell: cd: OLDPWD not set", 2);
-	global_exit = 1;
+	g_global_exit = 1;
 	return (NULL);
 }
 
@@ -44,12 +44,12 @@ char	*get_home(t_mini *mini)
 	i = 0;
 	while (mini->env[i])
 	{
-		if (check_same(mini->env[i], "HOME=") == 0)
+		if (ft_strncmp(mini->env[i], "HOME=", 5) == 0)
 			return (ft_strdup(ft_strchr(mini->env[i], '=') + 1));
 		i++;
 	}
 	ft_putendl_fd("minishell: cd: HOME not set", 2);
-	global_exit = 1;
+	g_global_exit = 1;
 	return (NULL);
 }
 
@@ -87,7 +87,7 @@ int	chdir_situation(char *newpwd, char *newlocation, char *oldpwd)
 	}
 	free(newpwd);
 	free(oldpwd);
-	global_exit = 1;
+	g_global_exit = 1;
 	return (1);
 }
 
@@ -107,9 +107,9 @@ void	set_newpwd(t_mini *mini, char *newpwd, char *newpwd2, int i)
 	char	*tmp;
 
 	if (newpwd2 == NULL)
-		tmp = ft_strjoin("PWD =", newpwd);
+		tmp = ft_strjoin("PWD=", newpwd);
 	else
-		tmp = ft_strjoin("PWD =", newpwd2);
+		tmp = ft_strjoin("PWD=", newpwd2);
 	free (mini->env[i]);
 	mini->env[i] = ft_strdup(tmp);
 	free (tmp);
@@ -119,7 +119,7 @@ void	set_oldpwd(t_mini *mini, char *oldpwd, int i)
 {
 	char	*tmp;
 
-	tmp = ft_strjoin("OLDPWD =", oldpwd);
+	tmp = ft_strjoin("OLDPWD=", oldpwd);
 	free (mini->env[i]);
 	mini->env[i] = ft_strdup(tmp);
 	free (tmp);
@@ -168,5 +168,5 @@ void	cd(t_mini *mini, char *newlocation)
 	set_pwd(mini, oldpwd, newpwd);
 	free(oldpwd);
 	free(newpwd);
-	global_exit = 0;
+	g_global_exit = 0;
 }

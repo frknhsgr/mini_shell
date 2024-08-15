@@ -38,7 +38,7 @@ void	fderror_1(char *str)
 		ft_putstr_fd(": Permission denied\n", 2);
 		exit(1);
 	}
-	global_exit = 1;
+	g_global_exit = 1;
 	exit (1);
 }
 
@@ -52,7 +52,7 @@ void	fderror_2(char *str)
 		ft_putstr_fd(": No such file or directory\n", 2);
 	else if (access(str, R_OK))
 		ft_putstr_fd(": Permission denied\n", 2);
-	global_exit = 1;
+	g_global_exit = 1;
 }
 
 int	command_list_count(t_mini *mini)
@@ -93,7 +93,7 @@ void	ft_main_signal(int signal)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
-		global_exit = 1;
+		g_global_exit = 1;
 	}
 }
 
@@ -101,7 +101,7 @@ void	ft_heredoc_signal(int signal)
 {
 	if (signal == SIGINT)
 	{
-		global_exit = 999;
+		g_global_exit = 999;
 		ioctl(STDIN_FILENO, TIOCSTI, "\n");
 		rl_replace_line("", 0);
 		rl_on_new_line();

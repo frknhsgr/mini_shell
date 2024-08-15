@@ -57,7 +57,7 @@ typedef struct s_utils
 	int	o_c;
 }	t_utils;
 
-extern int	global_exit;
+extern int	g_global_exit;
 
 void		take_env(t_mini *mini);
 char		**mm_split(char *temp);
@@ -114,7 +114,7 @@ void		ft_heredoc_signal(int signal);
 char		*make_lower(char *str);
 int			builtin_strcmp(char *s1, char *s2);
 void		check_builtin_status(t_mini *mini);
-void		check_builtin(t_mini *mini);
+void		check_builtin(t_mini *mini, int i);
 void		cd(t_mini *mini, char *newlocation);
 int			cd_case1(t_mini *mini, char **newlocation, char **newpwd, char *oldpwd);
 void		set_newlocation(char *oldpwd, char **newpwd, char *newlocation);
@@ -126,5 +126,11 @@ void		set_pwd(t_mini *mini, char *oldpwd, char *newpwd);
 void		set_newpwd2(char *newpwd, char **newpwd2);
 void		set_newpwd(t_mini *mini, char *newpwd, char *newpwd2, int i);
 void		set_oldpwd(t_mini *mini, char *oldpwd, int i);
+void	    pwd();
+void    	ft_exit(t_mini *mini, int i);
+int			ft_isnumeric(char *str);
+int			ft_arg_count(char **str);
+int			exit_with_arg(t_mini *mini, int j, char **arg);
+void		exit_with_error(t_mini *mini, char **arg);
 
 #endif

@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-int	global_exit;
+int	g_global_exit;
 
 void utils_struct_init(t_utils *t, char *arg)
 {
@@ -41,7 +41,7 @@ int main(int ac, char **av)
 	if (ac != 1)
 		return(printf("Error: Invalid Argument Count!\n"));
 	(void)av;
-	global_exit = 0;
+	g_global_exit = 0;
     take_env(&mini);
     while(1)
     {

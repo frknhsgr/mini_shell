@@ -2,17 +2,25 @@
 
 void	child_procces(t_mini *mini, char **command, int i)
 {
-	mini->pid = fork();
-    if (mini->pid == 0)
+	check_builtin_status(mini);
+    if (i == 1 && mini->status == BUILTIN)
     {
-		ft_signal_regulator(CHILD_P);
 		onecommand_output_input_regulator(mini, i, 0, 0);
-		check_builtin_status(mini);
-		if (mini->status != BUILTIN)
-        	run_cmd(mini, command);
-        else
-            check_builtin(mini);
-        exit(0);
+        check_builtin(mini, i);
+    }
+    else
+    {
+	    mini->pid = fork();
+        if (mini->pid == 0)
+        {
+		    ft_signal_regulator(CHILD_P);
+		    onecommand_output_input_regulator(mini, i, 0, 0);
+		    if (mini->status != BUILTIN)
+        	    run_cmd(mini, command);
+            else
+                check_builtin(mini, i);
+            exit(0);
+        }
     }
     return ;
 }

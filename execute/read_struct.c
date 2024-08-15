@@ -168,8 +168,8 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 		if (mini->status != BUILTIN)
 			run_cmd(mini, command);
 		else
-        	check_builtin(mini);
-		exit (global_exit);
+        	check_builtin(mini, i);
+		exit (g_global_exit);
 	}
 	close(pipe[1]);
 	dup2(pipe[0], 0);
@@ -225,7 +225,7 @@ int	status_check(t_mini *temp)
 
 void	close_heredoc()
 {
-	global_exit = 130;
+	g_global_exit = 130;
 	exit (130);
 }
 
@@ -248,7 +248,7 @@ void	ft_heredoc(int fd[2], t_mini *mini, int fd_2[2])
 	dup2(fd[0], 0);
 	while (mini->heredoc[i])
 	{
-		if (global_exit == 999)
+		if (g_global_exit == 999)
 		{
 			free (temp);
 			exit (130);
@@ -256,7 +256,7 @@ void	ft_heredoc(int fd[2], t_mini *mini, int fd_2[2])
 		temp = readline("> ");
 		if (!temp)
 			close_heredoc();
-		if (global_exit == 999)
+		if (g_global_exit == 999)
 			continue ;
 		if (temp && mini->heredoc[i + 1] == NULL && check_same(mini->heredoc[i], temp) != 0)
 			ft_putendl_fd(temp, fd_2[1]);
@@ -284,7 +284,7 @@ void	heredoc_pipe(t_mini *mini, int fd[2])
 	close(fd_2[0]);
 	waitpid(mini->pid, &status, 0);
 	if (WIFEXITED(status))
-		global_exit = WEXITSTATUS(status);
+		g_global_exit = WEXITSTATUS(status);
 }
 
 void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
@@ -293,14 +293,14 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 	{	
 		if (mini->heredoc[0])
 			heredoc_pipe(mini, fd);
-		if (global_exit == 130)
+		if (g_global_exit == 130)
 			return ;
 		execute_pipe(mini, command, i);
 	}
 	else if (status_check(mini) == 2)
 	{
 		heredoc_pipe(mini, fd);
-		if (global_exit == 130)
+		if (g_global_exit == 130)
 			return ;
 		execute_pipe(mini, command, i);
 	}
@@ -308,7 +308,7 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 	{
 		if (mini->heredoc[0])
 			heredoc_pipe(mini, fd);
-		if (global_exit == 130)
+		if (g_global_exit == 130)
 			return ;
     	child_procces(mini, command, i);
 	}

@@ -21,10 +21,14 @@ int	builtin_strcmp(char *s1, char *s2)
 	return (1);
 }
 
-void	check_builtin(t_mini *mini)
+void	check_builtin(t_mini *mini, int i)
 {
 	if (mini->cmd && check_same(mini->cmd, "cd") == 0)
 		cd(mini, mini->flag_arg);
+	else if (mini->cmd && check_same(mini->cmd, "pwd") == 0)
+		pwd();
+	else if (mini->cmd && check_same(mini->cmd, "exit") == 0)
+		ft_exit(mini, i);
 }
 
 void	check_builtin_status(t_mini *mini)

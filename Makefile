@@ -2,7 +2,7 @@ NAME	=	minishell
 
 SRC	=	main.c parsing/divide_prs.c  parsing/take_output.c parsing/struct_filling.c builtins/env.c \
 		execute/execute.c execute/read_struct.c execute/child.c utils/execute_utils.c builtins/check_builtin.c \
-		builtins/cd.c
+		builtins/cd.c builtins/pwd.c builtins/exit.c
 
 
 CC = gcc
