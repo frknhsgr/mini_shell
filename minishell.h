@@ -132,5 +132,8 @@ int			ft_isnumeric(char *str);
 int			ft_arg_count(char **str);
 int			exit_with_arg(t_mini *mini, int j, char **arg);
 void		exit_with_error(t_mini *mini, char **arg);
+void		ft_echo(t_mini *mini);
+void		check_echo_arg(char *str, int *i, int *j, int *flag);
+void		check_flag(char *str, int *j, int *flag);
 
 #endif

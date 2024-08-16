@@ -29,6 +29,8 @@ void	check_builtin(t_mini *mini, int i)
 		pwd();
 	else if (mini->cmd && check_same(mini->cmd, "exit") == 0)
 		ft_exit(mini, i);
+	else if (mini->cmd && check_same(mini->cmd, "echo") == 0)
+		ft_echo(mini);
 }
 
 void	check_builtin_status(t_mini *mini)
