@@ -1,33 +1,57 @@
 #include "../minishell.h"
 
-void	check_flag(char *str, int *j, int *flag)
+int	flag_control(char *arg)
 {
-	while (str[*j] && str[*j] == 'n')
-		j++;
+	int	i;
 
+	i = 0;
+	while (arg[i])
+	{
+		if (arg[i] != 'n')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
-void	check_echo_arg(char *str, int *i, int *j, int *flag)
+void	echo_flag_control(char **arg, int *i)
 {
-	while (str[*i])
+	if (flag_control(arg[*i] + 1) == 1)
+		return ;
+	*i += 1;
+	if (arg[*i] && arg[*i][0] == '-')
+		echo_flag_control(arg, i);
+}
+
+void	echo_with_arg(t_mini *mini)
+{
+	char	**arg;
+	int		i;
+	int		flag;
+
+	i = 0;
+	flag = 0;
+	arg = ft_split(mini->flag_arg, ' ');
+	if (arg[i][0] == '-')
+		echo_flag_control(arg, &i);
+	flag = i;
+	while (arg[i])
 	{
-		if (i == 0 && str[*i] == '-')
-			check_flag(str, j, flag);
+		printf("%s", arg[i]);
+		if (arg[i + 1])
+			printf(" ");
+		i++;
 	}
+	if (!flag && arg[flag])
+		printf("\n");
+	ft_free_dp(arg);
 }
 
 void	ft_echo(t_mini *mini)
 {
-	int	i;
-	int	j;
-	int	flag;
-
-	i = 0;
-	j = 1;
-	flag = 0;
 	if (mini->flag_arg && mini->flag_arg[0])
 	{
-		check_echo_arg(mini->flag_arg, &i, &j, &flag);
+		echo_with_arg(mini);
 	}
 	else
 		printf("\n");
