@@ -119,6 +119,7 @@ void	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
 
 	j = -1;
 	flag = 1;
+	fd = 0;
 	while (mini->arg[++j])
 	{
 		quote_check(mini->arg[j], &sq, &dq);
@@ -136,8 +137,11 @@ void	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
 			j++;
 		}
 	}
-	dup2(fd, 1);
-	close (fd);
+	if (fd > 0)
+	{
+		dup2(fd, 1);
+		close (fd);
+	}
 }
 
 void	output_input_regulator(t_mini *mini, int i, int fd[2])
