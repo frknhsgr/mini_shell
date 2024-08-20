@@ -94,7 +94,12 @@ int			command_list_count(t_mini *mini);
 
 void		onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq);
 void		output_input_regulator(t_mini *mini, int i, int fd[2]);
+int			output_input(t_mini *mini, int i, int sq, int dq);
 int			output_append_checker(t_mini *mini);
+int			if_input(t_mini *mini, int j, int sq, int dq);
+int			if_heredoc(t_mini *mini, int j, int sq, int dq);
+int			if_output(t_mini *mini, int j, int sq, int dq);
+int			if_append(t_mini *mini, int j, int sq, int dq);
 int			ft_open_output(t_mini *mini, int i);
 int			ft_open_append(t_mini *mini, int i);
 int			ft_open_input(t_mini *mini, int i);

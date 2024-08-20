@@ -6,11 +6,21 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:15:10 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 18:15:11 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/08/20 18:52:24 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int	check_same(char *s1, char *s2)
+{
+	if (!s1 || !s2)
+		return (1);
+	if (ft_strncmp(s1, s2, ft_strlen(s1)) == 0 \
+	&& ft_strncmp(s2, s1, ft_strlen(s2)) == 0)
+		return (0);
+	return (1);
+}
 
 int	command_list_count(t_mini *mini)
 {

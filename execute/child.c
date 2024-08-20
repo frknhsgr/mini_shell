@@ -1,4 +1,28 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   child.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/20 19:43:56 by fhosgor           #+#    #+#             */
+/*   Updated: 2024/08/20 19:43:57 by fhosgor          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
+
+void	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
+{
+	int fd;
+
+	fd = output_input(mini, i, sq, dq);
+	if (fd > 0)
+	{
+		dup2(fd, 1);
+		close (fd);
+	}
+}
 
 void	child_procces(t_mini *mini, char **command, int i)
 {
