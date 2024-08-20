@@ -180,11 +180,10 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	close(pipe[0]);
 }
 
-char **execve_command(t_mini *temp)
+char **execve_command(t_mini *temp, char **temp2)
 {
-    char **ret;
-    char **temp2;
-    int i;
+    char	**ret;
+    int		i;
 
     i = 0;
     if (temp->flag_arg)
@@ -193,8 +192,6 @@ char **execve_command(t_mini *temp)
         while (temp2[i])
             i++;
     }
-    else
-        temp2 = NULL;
 	if (temp->cmd != NULL)
 		i++;
     ret = malloc(sizeof(char *) * (i + 1));
@@ -203,17 +200,13 @@ char **execve_command(t_mini *temp)
 	if (temp->cmd != NULL)
     	ret[0] = ft_strdup(temp->cmd);
     i = 0;
-    while (temp2 && temp2[i])
-    {
-        ret[i + 1] = ft_strdup(temp2[i]);
-        i++;
-    }
+    while (temp2 && temp2[i] && ++i)
+        ret[i] = ft_strdup(temp2[i - 1]);
 	if (i == 0 && temp->cmd == NULL)
     	ret[0] =  NULL;
 	else
 		ret[i + 1] = NULL;
-	ft_free_dp(temp2);
-    return (ret);
+    return (ft_free_dp(temp2), ret);
 }
 
 int	status_check(t_mini *temp)
@@ -328,7 +321,7 @@ void	read_and_exec(t_mini *cmd, int i)
 	duplicate_default_fd(fd);
     while (temp)
     {
-        command = execve_command(temp);
+        command = execve_command(temp, NULL);
 		ft_executer(temp, command, i, fd);
 		ft_free_dp(command);
         temp = temp->next;

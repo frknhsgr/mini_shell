@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/20 18:15:40 by fhosgor           #+#    #+#             */
+/*   Updated: 2024/08/20 18:15:41 by fhosgor          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 int	ft_isnumeric(char *str)
@@ -61,24 +73,23 @@ int	exit_with_arg(t_mini *mini, int j, char **arg)
 	return (0);
 }
 
-void    ft_exit(t_mini *mini, int i)
+void	ft_exit(t_mini *mini, int i)//freelemeleri yap
 {
 	char	**arg;
 	int		j;
-    
-	//freelemeleri yap
+
 	j = 0;
 	if (mini->flag_arg && mini->flag_arg[0])
 	{
 		arg = ft_split(mini->flag_arg, ' ');
 		j = ft_arg_count(arg);
 	}
-    if (mini->cmd && i == 1)
-    {
-        printf("exit\n");
-        if (mini->flag_arg && mini->flag_arg[0])
+	if (mini->cmd && i == 1)
+	{
+		printf("exit\n");
+		if (mini->flag_arg && mini->flag_arg[0])
 			if (exit_with_arg(mini, j, arg) == 1)
 				return ;
-	    exit(g_global_exit);
-    }
+		exit(g_global_exit);
+	}
 }

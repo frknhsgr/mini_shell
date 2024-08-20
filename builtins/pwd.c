@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pwd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/20 18:15:42 by fhosgor           #+#    #+#             */
+/*   Updated: 2024/08/20 18:15:43 by fhosgor          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
 void	set_newpwd2(char *newpwd, char **newpwd2)
@@ -5,7 +17,8 @@ void	set_newpwd2(char *newpwd, char **newpwd2)
 	int	i;
 
 	i = ft_strlen(newpwd) - 1;
-	if (i > 2 && newpwd[i] == '.' && newpwd[i - 1] == '.' && newpwd[i - 2] == '/')
+	if (i > 2 && newpwd[i] == '.' && \
+	newpwd[i - 1] == '.' && newpwd[i - 2] == '/')
 		*newpwd2 = getcwd(NULL, 0);
 	else
 		*newpwd2 = NULL;
@@ -40,12 +53,12 @@ char	*get_oldpwd(t_mini *mini)
 	return (NULL);
 }
 
-void    pwd()
+void	pwd(void)
 {
-    char    *pwd;
+	char	*pwd;
 
-    pwd = getcwd(NULL, 0);
-    printf("%s\n", pwd);
-    free(pwd);
-    g_global_exit = 0;
+	pwd = getcwd(NULL, 0);
+	printf("%s\n", pwd);
+	free(pwd);
+	g_global_exit = 0;
 }
