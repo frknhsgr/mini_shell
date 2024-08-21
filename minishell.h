@@ -75,8 +75,9 @@ int			append_count(char *str, int dq, int sq, int type);
 void		ft_allcation_for_struct(t_mini *cmd, t_utils *t);
 void		init_mini_struct(t_mini *mini);
 void		print_cmd(t_mini *cmd);
-void		run_cmd(t_mini *cmd, char **command);
 
+void		run_cmd(t_mini *cmd, char **command);
+char		*get_cmd_path(t_mini *cmd, char **command, char **path, char *temp);
 void		heredoc_status_regulator(t_mini *mini, int type);
 void		append_status_regulator(t_mini *mini, int type);
 void		status_regulator(t_mini *mini);

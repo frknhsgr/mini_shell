@@ -3,7 +3,7 @@ NAME	=	minishell
 SRC	=	main.c parsing/divide_prs.c  parsing/take_output.c parsing/struct_filling.c builtins/env.c \
 		execute/execute.c execute/read_struct.c execute/child.c utils/execute_utils1.c builtins/check_builtin.c \
 		builtins/cd.c builtins/pwd.c builtins/exit.c builtins/echo.c utils/cd_utils.c utils/execute_utils2.c \
-		execute/heredoc.c execute/redirects.c utils/redirect_utils.c
+		execute/heredoc.c execute/redirects.c utils/redirect_utils.c utils/execute_utils3.c
 
 
 CC = gcc

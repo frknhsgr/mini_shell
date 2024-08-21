@@ -1,27 +1,16 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   read_struct.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/21 16:18:11 by fhosgor           #+#    #+#             */
+/*   Updated: 2024/08/21 16:26:58 by fhosgor          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
-
-void	duplicate_default_fd(int fd[2])
-{
-	fd[0] = dup(STDIN_FILENO);
-	fd[1] = dup(STDOUT_FILENO);
-}
-
-void	close_duplicate_fd(int fd[2])
-{
-	dup2(fd[0], 0);
-	dup2(fd[1], 1);
-	close(fd[0]);
-	close(fd[1]);
-}
-
-void	pipe_checker(int fd[2])
-{
-	if (pipe(fd) == -1)
-	{
-		perror("pipe error");
-		exit(127);
-	}
-}
 
 void	execute_pipe(t_mini *mini, char **command, int i)
 {
@@ -39,7 +28,7 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 		if (mini->status != BUILTIN)
 			run_cmd(mini, command);
 		else
-        	check_builtin(mini, i);
+			check_builtin(mini, i);
 		exit (g_global_exit);
 	}
 	close(pipe[1]);
@@ -47,33 +36,33 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	close(pipe[0]);
 }
 
-char **execve_command(t_mini *temp, char **temp2)
+char	**execve_command(t_mini *temp, char **temp2)
 {
-    char	**ret;
-    int		i;
+	char	**ret;
+	int		i;
 
-    i = 0;
-    if (temp->flag_arg)
-    {
-        temp2 = ft_split(temp->flag_arg, ' ');
-        while (temp2[i])
-            i++;
-    }
+	i = 0;
+	if (temp->flag_arg)
+	{
+		temp2 = ft_split(temp->flag_arg, ' ');
+		while (temp2[i])
+			i++;
+	}
 	if (temp->cmd != NULL)
 		i++;
-    ret = malloc(sizeof(char *) * (i + 1));
-    if (!ret)
-        return (NULL);
+	ret = malloc(sizeof(char *) * (i + 1));
+	if (!ret)
+		return (NULL);
 	if (temp->cmd != NULL)
-    	ret[0] = ft_strdup(temp->cmd);
-    i = 0;
-    while (temp2 && temp2[i] && ++i)
-        ret[i] = ft_strdup(temp2[i - 1]);
+		ret[0] = ft_strdup(temp->cmd);
+	i = 0;
+	while (temp2 && temp2[i] && ++i)
+		ret[i] = ft_strdup(temp2[i - 1]);
 	if (i == 0 && temp->cmd == NULL)
-    	ret[0] =  NULL;
+		ret[0] = NULL;
 	else
 		ret[i + 1] = NULL;
-    return (ft_free_dp(temp2), ret);
+	return (ft_free_dp(temp2), ret);
 }
 
 int	status_check(t_mini *temp)
@@ -90,7 +79,7 @@ int	status_check(t_mini *temp)
 void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 {
 	if (status_check(mini) == 1)
-	{	
+	{
 		if (mini->heredoc[0])
 			heredoc_pipe(mini, fd);
 		if (g_global_exit == 130)
@@ -110,25 +99,25 @@ void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 			heredoc_pipe(mini, fd);
 		if (g_global_exit == 130)
 			return ;
-    	child_procces(mini, command, i);
+		child_procces(mini, command, i);
 	}
 }
 
 void	read_and_exec(t_mini *cmd, int i)
 {
-    t_mini	*temp;
-    char	**command;
+	t_mini	*temp;
+	char	**command;
 	int		fd[2];
 
-    temp = cmd;
+	temp = cmd;
 	duplicate_default_fd(fd);
-    while (temp)
-    {
-        command = execve_command(temp, NULL);
+	while (temp)
+	{
+		command = execve_command(temp, NULL);
 		ft_executer(temp, command, i, fd);
 		ft_free_dp(command);
-        temp = temp->next;
-    }
+		temp = temp->next;
+	}
 	close_duplicate_fd(fd);
-    wait_child(cmd);
+	wait_child(cmd);
 }
