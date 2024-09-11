@@ -1,18 +1,39 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_isprint.c                                       :+:      :+:    :+:   */
+/*   environment.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgokcu <sgokcu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/11 16:27:39 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/09/08 15:59:46 by sgokcu           ###   ########.fr       */
+/*   Created: 2024/09/03 18:23:52 by sgokcu            #+#    #+#             */
+/*   Updated: 2024/09/03 18:23:53 by sgokcu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-int	ft_isprint(int c)
+#include "minishell.h"
+
+int	count_environ(char **environ)
 {
-	if (c >= 32 && c < 127)
-		return (1);
-	return (0);
+	int	i;
+
+	i = 0;
+	if (!environ)
+		return (0);
+	while (environ[i])
+		i++;
+	return (i);
+}
+
+void	take_env(t_mini *mini)
+{
+	extern char	**environ;
+	int			i;
+
+	mini->env = malloc(sizeof(char *) * (count_environ(environ) + 1));
+	i = 0;
+	while (environ[i])
+	{
+		mini->env[i] = ft_strdup(environ[i]);
+		i++;
+	}
 }

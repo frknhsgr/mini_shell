@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:57:08 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 19:50:39 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 17:34:42 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,7 @@ int	output_input(t_mini *mini, int i, int sq, int dq)
 	{
 		quote_check(mini->arg[j], &sq, &dq);
 		if (flag == -1 || fd == -1)
-			break ;
+			return (-1);
 		if (if_input(mini, j, sq, dq))
 			flag = ft_open_input(mini, i);
 		if (if_heredoc(mini, j, sq, dq))
@@ -126,8 +126,9 @@ void	output_input_regulator(t_mini *mini, int i, int fd[2])
 	if (output_append_checker(mini) == 1)
 	{
 		dup2(fd[1], 1);
+		close(fd[1]);
 		onecommand_output_input_regulator(mini, i, 0, 0);
 	}
-	else if (output_append_checker(mini) == 2)
+	else
 		onecommand_output_input_regulator(mini, i, 0, 0);
 }

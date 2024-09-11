@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:15:21 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 18:15:22 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 11:44:23 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,4 +45,26 @@ void	set_newlocation(char *oldpwd, char **newpwd, char *newlocation)
 	tmp = ft_strjoin(oldpwd, "/");
 	*newpwd = ft_strjoin(tmp, newlocation);
 	free (tmp);
+}
+
+int	ft_isfile(const char *path)
+{
+	struct stat	path_stat;
+
+	if (stat(path, &path_stat) != 0)
+		return (0);
+	return (S_ISREG(path_stat.st_mode));
+}
+
+void	ft_takenewloc(t_mini *mini)
+{
+	char	*temp;
+	int		i;
+
+	i = 0;
+	while (mini->flag_arg[i] && mini->flag_arg[i] != ' ')
+		i++;
+	temp = ft_substr(mini->flag_arg, 0, i);
+	free (mini->flag_arg);
+	mini->flag_arg = temp;
 }

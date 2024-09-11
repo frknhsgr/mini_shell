@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
+/*   By: sgokcu <sgokcu@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/20 18:15:37 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 18:15:38 by fhosgor          ###   ########.fr       */
+/*   Created: 2024/09/03 18:24:05 by sgokcu            #+#    #+#             */
+/*   Updated: 2024/09/03 18:24:06 by sgokcu           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	print_env(t_mini *mini, int status)
+void	ft_env(t_mini *mini, int status)
 {
 	int	i;
 
@@ -24,32 +24,6 @@ void	print_env(t_mini *mini, int status)
 		if (status == 1)
 			printf("declare -x ");
 		printf("%s\n", mini->env[i]);
-		i++;
-	}
-}
-
-int	count_environ(char **environ)
-{
-	int	i;
-
-	i = 0;
-	if (!environ)
-		return (0);
-	while (environ[i])
-		i++;
-	return (i);
-}
-
-void	take_env(t_mini *mini)
-{
-	extern char	**environ;
-	int			i;
-
-	mini->env = malloc(sizeof(char *) * (count_environ(environ) + 1));
-	i = 0;
-	while (environ[i])
-	{
-		mini->env[i] = ft_strdup(environ[i]);
 		i++;
 	}
 }

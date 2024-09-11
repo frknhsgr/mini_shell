@@ -6,13 +6,13 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:15:30 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 18:15:31 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 10:02:04 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	cd_case1(t_mini *mini, char **newlocation, char **newpwd, char *oldpwd)
+static int	cd_case1(t_mini *mini, char **newloc, char **newpwd, char *oldpwd)
 {
 	*newpwd = get_oldpwd(mini);
 	if (!*newpwd)
@@ -20,11 +20,11 @@ int	cd_case1(t_mini *mini, char **newlocation, char **newpwd, char *oldpwd)
 		free (oldpwd);
 		return (1);
 	}
-	*newlocation = *newpwd;
+	*newloc = *newpwd;
 	return (0);
 }
 
-int	cd_case2(t_mini *mini, char **newpwd, char **newlocation, char *oldpwd)
+static int	cd_case2(t_mini *mini, char **newpwd, char **newloc, char *oldpwd)
 {
 	*newpwd = get_home(mini);
 	if (!*newpwd)
@@ -32,13 +32,13 @@ int	cd_case2(t_mini *mini, char **newpwd, char **newlocation, char *oldpwd)
 		free(oldpwd);
 		return (1);
 	}
-	*newlocation = *newpwd;
+	*newloc = *newpwd;
 	return (0);
 }
 
-int	chdir_situation(char *newpwd, char *newlocation, char *oldpwd)
+static int	chdir_situation(char *newpwd, char *newlocation, char *oldpwd)
 {
-	if (!ft_isdirectory(newpwd))
+	if (ft_isfile(newpwd))
 	{
 		ft_putstr_fd("cd: ", 2);
 		ft_putstr_fd(newlocation, 2);
@@ -71,9 +71,9 @@ void	set_pwd(t_mini *mini, char *oldpwd, char *newpwd)
 	set_newpwd2(newpwd, &newpwd2);
 	while (mini->env[i])
 	{
-		if (check_same(mini->env[i], "PWD=") == 0)
+		if (ft_strncmp(mini->env[i], "PWD=", 4) == 0)
 			set_newpwd(mini, newpwd, newpwd2, i);
-		if (check_same(mini->env[i], "PWD=") == 0)
+		if (ft_strncmp(mini->env[i], "OLDPWD=", 7) == 0)
 			set_oldpwd(mini, oldpwd, i);
 		i++;
 	}
@@ -81,11 +81,8 @@ void	set_pwd(t_mini *mini, char *oldpwd, char *newpwd)
 		free(newpwd2);
 }
 
-void	cd(t_mini *mini, char *newlocation)
+void	cd(t_mini *mini, char *newlocation, char *oldpwd, char *newpwd)
 {
-	char	*oldpwd;
-	char	*newpwd;
-
 	if (newlocation && newlocation[0] == '/')
 		newpwd = ft_strdup(newlocation);
 	oldpwd = getcwd(NULL, 0);
@@ -93,6 +90,7 @@ void	cd(t_mini *mini, char *newlocation)
 	{
 		if (cd_case1(mini, &newlocation, &newpwd, oldpwd) == 1)
 			return ;
+		printf("%s\n", newlocation);
 	}
 	else if (newlocation && newlocation[0] != '/')
 		set_newlocation(oldpwd, &newpwd, newlocation);

@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:15:32 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 18:15:33 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 11:45:47 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,23 @@ int	builtin_strcmp(char *s1, char *s2)
 void	check_builtin(t_mini *mini, int i)
 {
 	if (mini->cmd && check_same(mini->cmd, "cd") == 0)
-		cd(mini, mini->flag_arg);
+	{
+		if (mini->flag_arg && mini->flag_arg[0])
+			ft_takenewloc(mini);
+		cd(mini, mini->flag_arg, NULL, NULL);
+	}
 	else if (mini->cmd && check_same(mini->cmd, "pwd") == 0)
 		pwd();
 	else if (mini->cmd && check_same(mini->cmd, "exit") == 0)
 		ft_exit(mini, i);
 	else if (mini->cmd && check_same(mini->cmd, "echo") == 0)
 		ft_echo(mini);
+	else if (mini->cmd && check_same(mini->cmd, "export") == 0)
+		ft_export(mini);
+	else if (mini->cmd && check_same(mini->cmd, "env") == 0)
+		ft_env(mini, 8);
+	else if (mini->cmd && check_same(mini->cmd, "unset") == 0)
+		ft_unset(mini);
 }
 
 void	check_builtin_status(t_mini *mini)

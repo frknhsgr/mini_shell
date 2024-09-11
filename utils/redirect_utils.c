@@ -14,10 +14,10 @@
 
 int	output_append_checker(t_mini *mini)
 {
-	if (mini->next != NULL && mini->append[0] == NULL \
-	&& mini->output[0] == NULL)
+	if (mini->next != NULL && !mini->append && !mini->output)
 		return (1);
-	else if (mini->output[0] != NULL || mini->append[0] != NULL)
+	else if ((mini->output && mini->output[0] != NULL) || \
+	(mini->append && mini->append[0] != NULL))
 		return (2);
 	return (0);
 }

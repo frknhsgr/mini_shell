@@ -12,7 +12,7 @@ OBJS = $(SRCS:.c=.o)
 
 CC	=	gcc
 RM	=	rm -f
-FLAGS	= -Wall -Wextra -Werror
+FLAGS	= -g -Wall -Wextra -Werror
 
 $(NAME): 
 		$(CC) $(FLAGS) -c $(SRCS) 

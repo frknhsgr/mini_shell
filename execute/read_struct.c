@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/21 16:18:11 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/21 16:26:58 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 11:17:07 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 {
 	int	pipe[2];
 
+	if (g_global_exit == 130)
+		return ;
 	pipe_checker(pipe);
 	mini->pid = fork();
 	if (mini->pid == 0)
@@ -23,7 +25,6 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 		ft_signal_regulator(CHILD_P);
 		close(pipe[0]);
 		output_input_regulator(mini, i, pipe);
-		close(pipe[1]);
 		check_builtin_status(mini);
 		if (mini->status != BUILTIN)
 			run_cmd(mini, command);
@@ -36,29 +37,29 @@ void	execute_pipe(t_mini *mini, char **command, int i)
 	close(pipe[0]);
 }
 
-char	**execve_command(t_mini *temp, char **temp2)
+char	**execve_command(t_mini *mini, char **temp2)
 {
 	char	**ret;
 	int		i;
 
 	i = 0;
-	if (temp->flag_arg)
+	if (mini->flag_arg)
 	{
-		temp2 = ft_split(temp->flag_arg, ' ');
+		temp2 = ft_split(mini->flag_arg, ' ');
 		while (temp2[i])
 			i++;
 	}
-	if (temp->cmd != NULL)
+	if (mini->cmd != NULL)
 		i++;
 	ret = malloc(sizeof(char *) * (i + 1));
 	if (!ret)
 		return (NULL);
-	if (temp->cmd != NULL)
-		ret[0] = ft_strdup(temp->cmd);
+	if (mini->cmd != NULL)
+		ret[0] = ft_strdup(mini->cmd);
 	i = 0;
 	while (temp2 && temp2[i] && ++i)
 		ret[i] = ft_strdup(temp2[i - 1]);
-	if (i == 0 && temp->cmd == NULL)
+	if (i == 0 && mini->cmd == NULL)
 		ret[0] = NULL;
 	else
 		ret[i + 1] = NULL;
@@ -76,48 +77,52 @@ int	status_check(t_mini *temp)
 		return (3);
 }
 
-void	ft_executer(t_mini *mini, char **command, int i, int fd[2])
+int	ft_executer(t_mini *mini, char **command, int i, int fd[2])
 {
 	if (status_check(mini) == 1)
 	{
-		if (mini->heredoc[0])
-			heredoc_pipe(mini, fd);
+		if (mini->heredoc && mini->heredoc[0])
+			heredoc_pipe(mini, fd, command);
 		if (g_global_exit == 130)
-			return ;
+			return (0);
 		execute_pipe(mini, command, i);
 	}
 	else if (status_check(mini) == 2)
 	{
-		heredoc_pipe(mini, fd);
+		heredoc_pipe(mini, fd, command);
 		if (g_global_exit == 130)
-			return ;
+			return (0);
 		execute_pipe(mini, command, i);
 	}
 	else
 	{
-		if (mini->heredoc[0])
-			heredoc_pipe(mini, fd);
+		if (mini->heredoc && mini->heredoc[0])
+			heredoc_pipe(mini, fd, command);
 		if (g_global_exit == 130)
-			return ;
+			return (0);
 		child_procces(mini, command, i);
 	}
+	return (1);
 }
 
-void	read_and_exec(t_mini *cmd, int i)
+void	read_and_exec(t_mini *mini, int i)
 {
 	t_mini	*temp;
 	char	**command;
 	int		fd[2];
 
-	temp = cmd;
+	temp = mini;
 	duplicate_default_fd(fd);
+	g_global_exit = 0;
 	while (temp)
 	{
 		command = execve_command(temp, NULL);
-		ft_executer(temp, command, i, fd);
+		if (!ft_executer(temp, command, i, fd))
+			break ;
 		ft_free_dp(command);
 		temp = temp->next;
 	}
 	close_duplicate_fd(fd);
-	wait_child(cmd);
+	wait_and_status(mini, i);
+	ft_free_struct(mini);
 }

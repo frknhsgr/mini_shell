@@ -6,13 +6,13 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 19:43:56 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/21 16:09:42 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 10:31:22 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
+int	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
 {
 	int	fd;
 
@@ -22,14 +22,20 @@ void	onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq)
 		dup2(fd, 1);
 		close (fd);
 	}
+	if (fd < 0)
+		return (0);
+	return (1);
 }
 
 void	child_procces(t_mini *mini, char **command, int i)
 {
+	if (g_global_exit == 130)
+		return ;
 	check_builtin_status(mini);
 	if (i == 1 && mini->status == BUILTIN)
 	{
-		onecommand_output_input_regulator(mini, i, 0, 0);
+		if (!onecommand_output_input_regulator(mini, i, 0, 0))
+			return ;
 		check_builtin(mini, i);
 	}
 	else
@@ -43,20 +49,47 @@ void	child_procces(t_mini *mini, char **command, int i)
 				run_cmd(mini, command);
 			else
 				check_builtin(mini, i);
-			exit(0);
+			exit(g_global_exit);
 		}
 	}
 	return ;
 }
 
-void	wait_child(t_mini *cmd)
+void	handler_sigint(int sig)
 {
+	if (sig == SIGINT)
+	{
+		ft_putchar_fd('\n', STDOUT_FILENO);
+		rl_on_new_line();
+		rl_replace_line("", 0);
+	}
+}
+
+void	wait_and_status(t_mini *mini, int i)
+{
+	pid_t	j;
+	int		status;
 	t_mini	*temp;
 
-	temp = cmd;
+	status = 0;
+	temp = mini;
+	if (g_global_exit == 130 && status_check2(temp))
+	{
+		g_global_exit = 1;
+		return ;
+	}
 	while (temp)
 	{
-		waitpid(temp->pid, 0, 0);
+		signal(SIGINT, &handler_sigint);
+		if (i == 1 && temp->status == BUILTIN)
+			break ;
+		j = waitpid(temp->pid, &status, 0);
+		if (j < 0)
+			continue ;
+		if (WIFEXITED(status))
+			g_global_exit = WEXITSTATUS(status);
+		else if (WIFSIGNALED(status))
+			g_global_exit = 128 + WTERMSIG(status);
 		temp = temp->next;
 	}
 }

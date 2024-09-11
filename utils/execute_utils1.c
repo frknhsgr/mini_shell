@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:15:18 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/08/20 18:15:19 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/09 11:22:58 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ void	ft_free_dp(char **str)
 	int	i;
 
 	i = 0;
-	if (!str || !str[i])
+	if (!str)
 		return ;
 	while (str[i])
 	{

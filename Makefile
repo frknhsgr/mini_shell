@@ -1,13 +1,16 @@
 NAME	=	minishell
 
-SRC	=	main.c parsing/divide_prs.c  parsing/take_output.c parsing/struct_filling.c builtins/env.c \
+SRC	=	main.c environment.c parsing/divide_prs.c  parsing/dollar.c parsing/struct_filling.c builtins/env.c \
 		execute/execute.c execute/read_struct.c execute/child.c utils/execute_utils1.c builtins/check_builtin.c \
 		builtins/cd.c builtins/pwd.c builtins/exit.c builtins/echo.c utils/cd_utils.c utils/execute_utils2.c \
-		execute/heredoc.c execute/redirects.c utils/redirect_utils.c utils/execute_utils3.c
+		execute/heredoc.c execute/redirects.c utils/redirect_utils.c utils/execute_utils3.c utils/pars_utils1.c \
+		utils/pars_utils2.c  builtins/export.c builtins/unset.c utils/execute_utils4.c utils/export_utils.c \
+		utils/export_utils1.c utils/unset_utils.c utils/dollar_utils.c utils/dollar_utils1.c utils/struct_filling_utils.c \
+		utils/struct_filling_utils1.c utils/struct_filling_utils2.c
 
 
 CC = gcc
-CFLAGS = -Wall -Werror -Wextra
+CFLAGS = -g  -Wall -Werror -Wextra
 RM = rm -rf
 LIBFT = lib/libft/libft.a
 READLINE = readline

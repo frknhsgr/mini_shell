@@ -1,276 +1,148 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   struct_filling.c                                   :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sgokcu <sgokcu@student.42.fr>              +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/03 18:23:49 by sgokcu            #+#    #+#             */
+/*   Updated: 2024/09/09 16:32:56 by sgokcu           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../minishell.h"
 
-void take_heredoc(t_utils *t, t_mini *cmd, char *arg)
+void	find_num_redirect(char *args, t_mini *mini, int dq, int sq)
 {
-	static int	i;
-
-	t->c++;
-	while (arg[t->c] && arg[t->c] == ' ') 
-		t->c++;
-	t->k = t->c;
-	while (arg[t->c])
-	{
-		quote_check(arg[t->c], &t->sq, &t->dq);
-		if ((arg[t->c] == ' ' && t->sq % 2 == 0 && t->dq % 2 == 0) || (ft_strchr("<>", arg[t->c]) && t->sq % 2 == 0 && t->dq % 2 == 0))
-			break ;
-		t->c++;
-	}
-	if (i < t->h_c)
-	{
-	 	cmd->heredoc[i] = ft_substr(arg, t->k, t->c - t->k);
-		i++;
-	}
-	if (i == t->h_c)
-	{
-		cmd->heredoc[i] = NULL;
-		i = 0;
-	}
-	heredoc_status_regulator(cmd, HEREDOC);
-}
-
-
-void	take_input(t_utils *t, t_mini *cmd, char *arg)
-{
-	static int	i;
-
-	while (arg[t->c] && arg[t->c] == ' ') 
-		t->c++;
-	t->k = t->c;
-	while (arg[t->c])
-	{
-		quote_check(arg[t->c], &t->sq, &t->dq);
-		if ((arg[t->c] == ' ' && t->sq % 2 == 0 && t->dq % 2 == 0) || (ft_strchr("<>", arg[t->c]) && t->sq % 2 == 0 && t->dq % 2 == 0))
-			break ;
-		t->c++;
-	}
-	if (i < t->i_c)
-	{
-	 	cmd->input[i] = ft_substr(arg, t->k, t->c - t->k);
-		i++;
-	}
-	if (i == t->i_c)
-	{
-		cmd->input[i] = NULL;
-		i = 0;
-	}
-	heredoc_status_regulator(cmd, 0);
-}
-
-void	take_append(t_utils *t, t_mini *cmd, char *arg)
-{
-	static int	i;
-
-	t->c++;
-	while (arg[t->c] && arg[t->c] == ' ') 
-		t->c++;
-	t->k = t->c;
-	while (arg[t->c])
-	{
-		quote_check(arg[t->c], &t->sq, &t->dq);
-		if ((arg[t->c] == ' ' && t->sq % 2 == 0 && t->dq % 2 == 0) || (ft_strchr("<>", arg[t->c]) && t->sq % 2 == 0 && t->dq % 2 == 0))
-			break ;
-		t->c++;
-	}
-	if (i < t->a_c)
-	{
-	 	cmd->append[i] = ft_substr(arg, t->k, t->c - t->k);
-		i++;
-	}
-	if (i == t->a_c)
-	{
-		cmd->append[i] = NULL;
-		i = 0;
-	}
-	append_status_regulator(cmd, APPEND);
-}
-
-void	take_output(t_utils *t, t_mini *cmd, char *arg)
-{
-	static int	i;
-
-	while (arg[t->c] && arg[t->c] == ' ') 
-		t->c++;
-	t->k = t->c;
-	while (arg[t->c])
-	{
-		quote_check(arg[t->c], &t->sq, &t->dq);
-		if ((arg[t->c] == ' ' && t->sq % 2 == 0 && t->dq % 2 == 0) || (ft_strchr("<>", arg[t->c]) && t->sq % 2 == 0 && t->dq % 2 == 0))
-			break ;
-		t->c++;
-	}
-	if (i < t->o_c)
-	{
-	 	cmd->output[i] = ft_substr(arg, t->k, t->c - t->k);
-		i++;
-	}
-	if (i == t->o_c)
-	{
-		cmd->output[i] = NULL;
-		i = 0;
-	}
-	append_status_regulator(cmd, 0);
-}
-
-
-void filling_struct(t_mini *cmd, t_utils *t, char *arg)
-{
-	char	*temp1;
-	char	*temp2;
-
-	while (arg[t->c])
-	{
-		quote_check(arg[t->c], &t->sq, &t->dq);
-		if (arg[t->c] == '<' && t->sq % 2 == 0 && t->dq % 2 == 0)
-		{
-			if (arg[++t->c] == '<')
-				take_heredoc(t, cmd, arg);
-			else
-				take_input(t, cmd, arg);
-		}
-		else if (arg[t->c] == '>' && t->sq % 2 == 0 && t->dq % 2 == 0)
-		{
-			if (arg[++t->c] == '>')
-				take_append(t, cmd, arg);
-			else
-				take_output(t, cmd, arg);
-		}
-		else
-		{
-			if (cmd->cmd == NULL)
-			{
-				while (arg[t->c] && arg[t->c] == ' ')
-					t->c++;
-				if (t->c != 0)
-					quote_check(arg[t->c], &t->sq, &t->dq);
-				t->k = t->c;
-				while (arg[t->c])
-				{
-					if ((arg[t->c] == ' ' && t->sq % 2 == 0 && t->dq % 2 == 0)
-					|| (ft_strchr("<>", arg[t->c]) && t->sq % 2 == 0 && t->dq % 2 == 0))
-						break ;
-					t->c++;
-					quote_check(arg[t->c], &t->sq, &t->dq);
-				}
-				cmd->cmd = ft_substr(arg,t->k, t->c - t->k);
-			}
-			else if (cmd->flag_arg == NULL || cmd->flag_arg)
-			{
-				while (arg[t->c] && arg[t->c] == ' ')
-					t->c++;
-				t->k = t->c;
-				while (arg[t->c])
-				{
-					quote_check(arg[t->c], &t->sq, &t->dq);
-					if (ft_strchr("<>", arg[t->c]) && t->sq % 2 == 0 && t->dq % 2 == 0)
-						break ;
-					t->c++;
-				}
-				if (cmd->flag_arg == NULL)
-					cmd->flag_arg = ft_substr(arg,t->k, t->c - t->k);
-				else if (cmd->flag_arg)
-				{
-					temp1 = cmd->flag_arg;
-					temp2 = ft_substr(arg,t->k, t->c - t->k);
-					cmd->flag_arg = ft_strjoin (temp1, temp2);
-					free (temp1);
-					free (temp2);
-				}
-			}
-			else
-				t->c++;
-		}
-		
-	} 
-}
-
-void print_cmd(t_mini *cmd)
-{
-	t_mini *temp;
-
-	temp = cmd;
-	while (cmd)
-	{
-		if (cmd->cmd)
-			printf("CMD: %s\n",cmd->cmd);
-		if (cmd->flag_arg)
-			printf("FLAG_ARG: %s\n",cmd->flag_arg);
-		for (int x = 0; cmd->output[x];x++)
-			printf("OUTPUT: %s\n",cmd->output[x]);
-		for (int x = 0; cmd->input[x];x++)
-			printf("INPUT: %s\n",cmd->input[x]);
-		for (int x = 0; cmd->heredoc[x];x++)
-			printf("HEREDOC: %s\n",cmd->heredoc[x]);
-		for (int x = 0; cmd->append[x];x++)
-			printf("APPEND: %s\n",cmd->append[x]);
-		printf("status = %d\n", cmd->status);
-		printf("----------------\n");
-		cmd = cmd->next;
-	}
-	cmd = temp;
-}
-
-void	status_regulator(t_mini * mini)
-{
-	if (mini->status == HEREDOC)
-		mini->status = PIPEHEREDOC;
-	else if (mini->status == APPEND)
-		mini->status = PIPEAPPEND;
-	else if (mini->status == HEREDOCAPPEND)
-		mini->status = PIPEHEREDOCAPPEND;
-	else if (mini->status == NONE)
-		mini->status = PIPE;
-}
-
-void	append_status_regulator(t_mini *mini, int type)
-{
-	if (mini->status == NONE && type == APPEND)
-		mini->status = APPEND;
-	else if (mini->status == HEREDOC && type == APPEND)
-		mini->status = HEREDOCAPPEND;
-	else if (mini->status == APPEND && type == 0)
-		mini->status = NONE;
-	else if (mini->status == HEREDOCAPPEND && type == 0)
-		mini->status = HEREDOC;
-}
-
-void	heredoc_status_regulator(t_mini *mini, int type)
-{
-	if (mini->status == NONE && type == HEREDOC)
-		mini->status = HEREDOC;
-	else if (mini->status == APPEND && type == HEREDOC)
-		mini->status = HEREDOCAPPEND;
-	else if (mini->status == HEREDOC && type == 0)
-		mini->status = NONE;
-	else if (mini->status == HEREDOCAPPEND && type == 0)
-		mini->status = APPEND;
-	
-}
-
-void	read_args(t_mini *cmd, char **arg)
-{
-	t_utils t;
-	t_mini *temp;
-	int		i;
+	int	i;
 
 	i = 0;
-	temp = cmd;
-	while (arg[i])
+	while (args[i] && (quote_check(args[i], &sq, &dq), 1))
 	{
-		utils_struct_init(&t, arg[i]);
-		if (arg[i] && i > 0)
+		if (args[i] == '<' && (dq % 2 == 0) && (sq % 2 == 0)
+			&& args[i + 1] != '<')
+			mini->redirect->input += 1;
+		if (args[i] == '>' && (dq % 2 == 0) && (sq % 2 == 0)
+			&& args[i + 1] != '>')
+			mini->redirect->output += 1;
+		if (args[i] == '<' && (dq % 2 == 0) && (sq % 2 == 0)
+			&& args[i + 1] == '<')
 		{
-			status_regulator(cmd);
-			cmd->next = malloc(sizeof(t_mini));
-			cmd->next->env = cmd->env;
-			cmd = cmd->next;
-			init_mini_struct(cmd);
-			cmd->next = NULL;
+			mini->redirect->heredoc += 1;
+			i++;
 		}
-		ft_allcation_for_struct(cmd, &t);
-		cmd->arg = ft_strdup(arg[i]);
-		filling_struct(cmd,&t,arg[i]);
+		if (args[i] == '>' && (dq % 2 == 0) && (sq % 2 == 0)
+			&& args[i + 1] == '>')
+		{
+			mini->redirect->append += 1;
+			i++;
+		}
 		i++;
 	}
-	cmd = temp;
-	//print_cmd(cmd);
+}
+
+void	taking_arg_redirect(char *str, t_mini *mini, int sq, int j)
+{
+	int	i;
+	int	dq;
+
+	i = 0;
+	dq = 0;
+	if (j > 0)
+		struct_business(mini);
+	find_num_redirect(str, mini, 0, 0);
+	allocate(mini);
+	while (str[i] && (quote_check(str[i], &sq, &dq), 1))
+	{
+		if (str[i] == '<' && str[i + 1] != '<'
+			&& (dq % 2 == 0) && (sq % 2 == 0))
+			imp(mini, &i, str, 1);
+		else if (str[i] == '>' && str[i + 1] != '>'
+			&& (dq % 2 == 0) && (sq % 2 == 0))
+			imp(mini, &i, str, 2);
+		else if (str[i] == '<' && str[i + 1] == '<'
+			&& (dq % 2 == 0) && (sq % 2 == 0))
+			imp2(mini, &i, str, 3);
+		else if (str[i] == '>' && str[i + 1] == '>'
+			&& (dq % 2 == 0) && (sq % 2 == 0))
+			imp2(mini, &i, str, 4);
+		i++;
+	}
+}
+
+int	pipe_control(char *str, int *i, int *control, int *quote)
+{
+	if (str[(*i)] == '|' && (*control) == 0 && *quote == 0)
+	{
+		g_global_exit = 258;
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+		return (0);
+	}
+	else if (str[(*i)] == '|' && str[(*i) + 1] != '\0')
+	{
+		(*i)++;
+		(*control) = 0;
+		return (2);
+	}
+	else if (str[(*i)] == '\0' && (*control) == 1)
+		return (1);
+	else if (*quote == 0)
+	{
+		g_global_exit = 258;
+		ft_putstr_fd("minishell: syntax error near unexpected token `|'\n", 2);
+	}
+	return (0);
+}
+
+int	pipe_check(char *str)
+{
+	int	control;
+	int	quote;
+	int	i;
+	int	s;
+
+	i = 0;
+	control = 0;
+	quote = 0;
+	while (str[i])
+	{
+		pipe_while(str, &i, &control, &quote);
+		s = pipe_control(str, &i, &control, &quote);
+		if (s == 0)
+			return (0);
+		else if (s == 2)
+			continue ;
+		else if (s == 1)
+			return (1);
+	}
+	return (1);
+}
+
+void	placing(char **args, t_mini *mini, int i)
+{
+	t_mini	*temp;
+
+	temp = mini;
+	while (args[i])
+	{
+		mini->arg = ft_strdup(args[i]);
+		taking_arg_redirect(args[i], mini, 0, i);
+		take_cmd(args[i], mini);
+		if (check_same(mini->cmd, "export") && check_same(mini->cmd, "unset"))
+			args[i] = delete_quotes(args[i], mini, 0, 0);
+		take_flag_arg(mini, args[i]);
+		status_regulator(mini, 0, 0, 0);
+		if (args[i + 1])
+		{
+			status_regulator_pipe(mini);
+			mini->next = malloc(sizeof(t_mini));
+			mini->next->redirect = NULL;
+			mini->next->utils = NULL;
+			mini->next->env = mini->env;
+			mini = mini->next;
+		}
+		mini->next = NULL;
+		i++;
+	}
+	mini = temp;
 }

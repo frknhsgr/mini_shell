@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/09/05 16:06:48 by fhosgor           #+#    #+#             */
+/*   Updated: 2024/09/09 14:49:36 by fhosgor          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -28,72 +40,123 @@
 # define CHILD_P 9
 # define MAIN_P 10
 # define HEREDOC_P 11
-
-typedef struct s_mini
-{
-	char			*arg;
-	char			*cmd;
-	char			*flag_arg;
-	char			**env;
-	char			**output;
-	char			**heredoc;
-	char			**input;
-	char			**append;
-	int				status;
-	pid_t			pid;
-	struct s_mini	*next;
-}	t_mini;
-
-typedef struct s_utils
-{
-	int	j;
-	int	k;
-	int	c;
-	int	sq;
-	int	dq;
-	int	a_c;
-	int	i_c;
-	int	h_c;
-	int	o_c;
-}	t_utils;
+# define MAIN_P2 12
 
 extern int	g_global_exit;
 
-void		take_env(t_mini *mini);
-char		**mm_split(char *temp);
-void		print_env(t_mini *mini, int status);
-int			pp_counter(char *temp, int squotes, int dquotes);
-void		utils_struct_init(t_utils *t, char *arg);
-void		read_args(t_mini *cmd, char **arg);
-void		quote_check(char temp, int *squotes, int *dquotes);
-void		take_heredoc(t_utils *t, t_mini *cmd, char *arg);
-void		take_append(t_utils *t, t_mini *cmd, char *arg);
-void		take_input(t_utils *t, t_mini *cmd, char *arg);
-void		take_output(t_utils *t, t_mini *cmd, char *arg);
-int			heredoc_count(char *str, int dq, int sq, int type);
-int			append_count(char *str, int dq, int sq, int type);
-void		ft_allcation_for_struct(t_mini *cmd, t_utils *t);
-void		init_mini_struct(t_mini *mini);
-void		print_cmd(t_mini *cmd);
+typedef struct s_redirect
+{
+	int	input;
+	int	output;
+	int	heredoc;
+	int	append;
+	int	start;
+	int	len;
+}	t_redirect;
 
-void		run_cmd(t_mini *cmd, char **command);
-char		*get_cmd_path(t_mini *cmd, char **command, char **path, char *temp);
+typedef struct s_utils
+{
+	int	dq;
+	int	sq;
+	int	z;
+	int	d;
+	int	k;
+	int	l;
+	int	j;
+}	t_utils;
+
+typedef struct s_mini
+{
+	int					status;
+	pid_t				pid;
+	char				*cmd;
+	char				*flag_arg;
+	char				*arg;
+	char				**env;
+	char				**input;
+	char				**output;
+	char				**heredoc;
+	char				**append;
+	struct s_mini		*next;
+	struct s_redirect	*redirect;
+	struct s_utils		*utils;
+}	t_mini;
+
+void		take_env(t_mini *mini);
+char		**mm_split(char *temp, char c);
+void		placing(char **args, t_mini *mini, int i);
+void		quote_check(char temp, int *squotes, int *dquotes);
+char		**ft_split(char const *s, char c);
+int			pipe_check(char *str);
+char		*is_dollar_exist_and_valid(char *str, t_mini *mini, int sq, int dq);
+void		exp_contains_equal(t_mini *mini, char **keep, int *i, int *control);
+char		*dollar_business(char *str, t_mini *mini, int *i);
+void		take_name_for_dollar(char *str, t_mini *mini);
+char		*val_redirect(char *str, t_mini *mini, int i, int j);
+void		ft_export(t_mini *mini);
+int			count_environ(char **environ);
+char		*export_business(char *str, t_mini *mini);
+void		ft_env(t_mini *mini, int status);
+void		ft_unset(t_mini *mini);
+void		ft_start_exp(t_mini *mini);
+void		cmp_env(char **str, char **envi, t_mini *mini, int count);
+void		dollar_working(t_mini *mini, char **str, int *i);
+void		put_quotes(char *val, int *j, char *str, int *i);
+void		count_redirect(char *str, t_mini *mini, int *redirect, int *i);
+char		*env_contains(char *str, t_mini *mini);
+void		dollar_zero_question_free(char **str, char *hold, \
+				char *s1, char *s2);
+void		dollar_zero_question(char	**str, int *i);
+void		env_recent(char **envi, t_mini *mini);
+void		free_env(char **envi);
+void		put_env(char *str, t_mini *mini);
+int			env_count_full(t_mini *mini);
+void		take_name_for_export(char *str, t_mini *mini);
+int			does_env_have(char *str, t_mini *mini);
+int			export_unset_control(int *control);
+void		struct_business(t_mini *mini);
+void		take_name(char *args, t_mini *mini);
+void		imp(t_mini *mini, int *i, char *str, int n);
+void		imp2(t_mini *mini, int *i, char *str, int n);
+void		allocate(t_mini *mini);
+void		make_it_short(t_mini *mini, char **keep, int *i);
+void		allocate_continue(t_mini *mini);
+char		*delete_quotes(char *str, t_mini *mini, int i, int j);
+int			is_quotes_closed(char *str);
+int			error_message_newline(char *tmp, t_mini *mini);
+void		export_err_msg(char	*str, int status);
+void		take_cmd(char *str, t_mini *mini);
+int			to_do_newline1(t_mini *mini, int *i, char *str, char **tmp);
+int			to_do_newline2(t_mini *mini, int *i, char *str, char **tmp);
+int			is_valid_name(char *str, t_mini *mini, int sq, int dq);
+void		fill_space(char *str, int start, int len);
+void		pipe_while(char *str, int *i, int *control, int *quote);
+void		unset_typo(t_mini *mini, char **keep, int *i, int *control);
+int			count_unsets(char **str, t_mini *mini, int i);
+void		find_match(char **str, char **envi, int *control, int *i);
+void		to_make_it_shorter(t_mini *mini, char **valid, int *k);
+void		take_flag_arg(t_mini *mini, char *str);
+void		status_regulator(t_mini *mini, int i, int sq, int dq);
+void		status_regulator_pipe(t_mini *mini);
+void		append_status_regulator(t_mini *mini, int type);
+void		heredoc_status_regulator(t_mini *mini, int type);
+void		run_cmd(t_mini *mini, char **command);
+char		*get_cmd_path(t_mini *mini, char **command, char **path, int i);
 void		heredoc_status_regulator(t_mini *mini, int type);
 void		append_status_regulator(t_mini *mini, int type);
-void		status_regulator(t_mini *mini);
-void		ft_executer(t_mini *mini, char **command, int i, int fd[2]);
-void		read_and_exec(t_mini *cmd, int i);
+int			ft_executer(t_mini *mini, char **command, int i, int fd[2]);
+void		read_and_exec(t_mini *mini, int i);
 char		**execve_command(t_mini *temp, char **temp2);
-void		child_procces(t_mini *cmd, char **command, int i);
-void		wait_child(t_mini *cmd);
+void		child_procces(t_mini *mini, char **command, int i);
+void		wait_and_status(t_mini *mini, int i);
 void		execute_pipe(t_mini *mini, char **command, int i);
 void		ft_free_dp(char **str);
 void		duplicate_default_fd(int fd[2]);
 void		close_duplicate_fd(int fd[2]);
 void		pipe_checker(int fd[2]);
 int			command_list_count(t_mini *mini);
-
-void		onecommand_output_input_regulator(t_mini *mini, int i, int sq, int dq);
+int			onecommand_output_input_regulator(t_mini *mini, \
+				int i, int sq, int dq);
 void		output_input_regulator(t_mini *mini, int i, int fd[2]);
 int			output_input(t_mini *mini, int i, int sq, int dq);
 int			output_append_checker(t_mini *mini);
@@ -104,37 +167,35 @@ int			if_append(t_mini *mini, int j, int sq, int dq);
 int			ft_open_output(t_mini *mini, int i);
 int			ft_open_append(t_mini *mini, int i);
 int			ft_open_input(t_mini *mini, int i);
-
 int			status_check(t_mini *temp);
-void		heredoc_pipe(t_mini *mini, int fd[2]);
-void		ft_heredoc(int fd[2], t_mini *mini, int fd_2[2]);
+int			status_check2(t_mini *mini);
+void		heredoc_pipe(t_mini *mini, int fd[2], char **command);
+void		ft_heredoc(int fd[2], t_mini *mini, int fd_2[2], int i);
 int			check_same(char *s1, char *s2);
 void		fderror_1(char *str);
 void		fderror_2(char *str);
 int			ft_isdirectory(const char *str);
 int			is_fileordirectory(const char *str);
-
+int			ft_isfile(const char *path);
 void		ft_signal_regulator(int status);
 void		ft_main_signal(int signal);
+void		ft_main_signal2(int signal);
 void		ft_heredoc_signal(int signal);
-
 char		*make_lower(char *str);
 int			builtin_strcmp(char *s1, char *s2);
 void		check_builtin_status(t_mini *mini);
 void		check_builtin(t_mini *mini, int i);
-void		cd(t_mini *mini, char *newlocation);
-int			cd_case1(t_mini *mini, char **newlocation, char **newpwd, char *oldpwd);
+void		cd(t_mini *mini, char *newlocation, char *oldpwd, char *newpwd);
+void		ft_takenewloc(t_mini *mini);
 void		set_newlocation(char *oldpwd, char **newpwd, char *newlocation);
 char		*get_oldpwd(t_mini *mini);
-int			cd_case2(t_mini *mini, char **newpwd, char **newlocation, char *oldpwd);
 char		*get_home(t_mini *mini);
-int			chdir_situation(char *newpwd, char *newlocation, char *oldpwd);
 void		set_pwd(t_mini *mini, char *oldpwd, char *newpwd);
 void		set_newpwd2(char *newpwd, char **newpwd2);
 void		set_newpwd(t_mini *mini, char *newpwd, char *newpwd2, int i);
 void		set_oldpwd(t_mini *mini, char *oldpwd, int i);
-void	    pwd();
-void    	ft_exit(t_mini *mini, int i);
+void		pwd(void);
+void		ft_exit(t_mini *mini, int i);
 int			ft_isnumeric(char *str);
 int			ft_arg_count(char **str);
 int			exit_with_arg(t_mini *mini, int j, char **arg);
@@ -143,5 +204,8 @@ void		ft_echo(t_mini *mini);
 void		echo_with_arg(t_mini *mini);
 void		echo_flag_control(char **arg, int *i);
 int			flag_control(char *arg);
+int			execute_error(char *command, int i);
+void		ft_free_struct(t_mini *mini);
+void		ft_free_for_structs(t_mini *temp);
 
 #endif
