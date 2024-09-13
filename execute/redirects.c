@@ -6,7 +6,7 @@
 /*   By: fhosgor <fhosgor@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/08/20 18:57:08 by fhosgor           #+#    #+#             */
-/*   Updated: 2024/09/09 17:34:42 by fhosgor          ###   ########.fr       */
+/*   Updated: 2024/09/13 14:09:27 by fhosgor          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ int	ft_open_input(t_mini *mini, int i)
 	{
 		dup2(fd, 0);
 		close(fd);
+		j = 0;
 	}
 	return (1);
 }
@@ -63,6 +64,8 @@ int	ft_open_output(t_mini *mini, int i)
 			close(fd);
 		j++;
 	}
+	if (mini->output[j] == NULL)
+		j = 0;
 	return (fd);
 }
 
@@ -88,6 +91,8 @@ int	ft_open_append(t_mini *mini, int i)
 			close(fd);
 		j++;
 	}
+	if (mini->append[j] == NULL)
+		j = 0;
 	return (fd);
 }
 
